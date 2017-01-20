@@ -1,0 +1,9 @@
+db.sqlite3
+.eric6project/
+.idea/
+TOPTAL.e4p
+extrack/extrack/__pycache__/
+extrack/book/__pycache__/
+extrack/book/migrations/__pycache__/
+extrack/book/views/__pycache__/
+
