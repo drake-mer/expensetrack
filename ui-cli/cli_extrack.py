@@ -22,7 +22,7 @@ user, adm = read_conf()
 
 def connect_as( user=default_user() ):
 
-    r = requests.get( user.host + ':' + user.port,
+    r = requests.get( user['host'] + ':' + user['port'],
                      auth=(user['login'], user['password']) )
     return r
 
