@@ -1,46 +1,94 @@
-from django.test import TestCase
+from django.test.utils import setup_test_environment
+from django.test import TestCase, Client
 from django.utils import timezone
+from django.urls import reverse
 
-import random
+setup_test_environment()
 
-from .models import Record, User
+from .models import Record, BookUser
+
+class RouteUserTest(TestCase):
+    """
+    Simple testing of the routes defined into book/urls.py
+    More complex testing could be placed here.
+    """
+    client=Client()
+
+    def test_create_user(self):
+        res = self.client.get(reverse( 'create_user' ) )
+        print(res)
+        self.assertNotEqual( res.status_code, 404)
+
+    def test_get_user(self):
+        res = self.client.get( reverse( 'get_all_users' ) )
+        self.assertNotEqual( res.status_code, 404)
+        print(res)
+
+        res = self.client.get( reverse( 'get_user', args=[1] ) )
+        self.assertNotEqual( res.status_code, 404)
+        print(res)
+
+
+    def test_update_user(self):
+        res = self.client.get(reverse('update_user', args=[23]))
+        self.assertNotEqual( res.status_code, 404 )
+
+
+    def test_delete_user(self):
+        res = self.client.get( reverse( 'delete_user', args=[32] ) )
+        self.assertNotEqual( res.status_code, 404 )
+
+
+class RouteRecordTest(TestCase):
+
+    client=Client()
+    def test_update_record(self):
+        res = self.client.get( reverse('update_record', args=[43] ) )
+        self.assertNotEqual( res.status_code, 404)
+
+    def test_get_record(self):
+        res = self.client.get( reverse( 'get_record', args=[52] ) )
+        self.assertNotEqual( res.status_code, 404)
+        res = self.client.get( reverse( 'get_all_records_of_user', args=[389] ) )
+        self.assertNotEqual( res.status_code, 404)
+
+    def test_delete_record(self):
+        res = self.client.get( reverse( 'delete_record', args=[43] ) )
+        self.assertNotEqual( res.status_code, 404)
+
+    def test_get_weekly_record(self):
+        res = self.client.get(reverse('get_weekly_record', args=[1,2039,20]) )
+        self.assertNotEqual( res.status_code, 404)
+
+
+
 
 # Create your tests here.
 class BookTest(TestCase):
-    NAME = "WHAT'S MY MOTHER FUCKING NAME ?"
-    LOGIN = "I'M LOGGIN IN YOUR ASS"
+    NAME = "IDENTITIY_NAME"
+    LOGIN = "IDENTITY_LOGIN"
     ADMIN_NAME = "ADMIN_NAME"
     ADMIN_LOGIN = "ADMIN_LOGIN"
 
     @classmethod
-    def UserFixture(cls, name=NAME, login=LOGIN):
-        u = User(user_name=name,
-                 user_login=login,
-                 user_type=1)
-        u.save()
-        return u
+    def BookUserFixture(cls, name=NAME, login=LOGIN):
+        return BookUser.objects.create_user( username=login,
+                                             first_name=name,
+                                             last_name='FAKE_LAST_NAME',
+                                             password='*****' )
 
 
-    @classmethod
-    def AdminFixture(cls):
-        u = User(user_name=cls.ADMIN_NAME,
-                 user_login=cls.ADMIN_LOGIN,
-                 user_type=2)
-        u.save()
-        return u
 
-
-    def test_CreateUser(self):
-        print(User.objects.all())
-        u=self.UserFixture()
-        self.assertEqual( u.user_login, self.LOGIN )
-        self.assertEqual( u.user_name, self.NAME)
-        for my_obj in User.objects.all():
+    def test_CreateBookUser(self):
+        print(BookUser.objects.all())
+        u=self.BookUserFixture()
+        self.assertEqual( u.username, self.LOGIN )
+        self.assertEqual( u.first_name, self.NAME)
+        for my_obj in BookUser.objects.all():
             print(my_obj)
 
     def test_CreateRecord(self, val=345.2256):
-        u=self.UserFixture()
-        v=self.UserFixture()
+        u=self.BookUserFixture()
         r = Record(
             user_id = u,
             description = "buying a pair of Shoes",
@@ -55,13 +103,12 @@ class BookTest(TestCase):
             self.assertAlmostEqual( float(r.value), val, places=2 )
             print(r)
 
-    def test_ManyUsers(self, count=100):
+    def test_ManyBookUsers(self, count=10):
         list_results=[]
         for x in range(count):
-            ID = str(random.randint(1000,9999))
-            u = self.UserFixture( name="user" + ID, login="login" + ID )
-            u.save()
+            ID = str(9999 + x)
+            u = self.BookUserFixture( name="a_user" + ID, login="login" + ID )
 
-        for user in User.objects.filter( user_name__endswith="9"):
-            print(user)
+        for a_user in BookUser.objects.filter( first_name__endswith="2"):
+            print(a_user)
 

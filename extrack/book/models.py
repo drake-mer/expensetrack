@@ -1,25 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-USER_KINDS = (
-    (1,'Single User'),
-    (2,'Admin')
-)
-
-class User( models.Model ):
-
-    user_type = models.IntegerField( choices=USER_KINDS )
-    user_name = models.CharField( max_length=20, default="" )
-    user_login = models.CharField( max_length=20, default="" )
-
+class BookUser( User ):
     def __str__(self):
-        name = self.user_name
-        login = self.user_login
-        type = self.user_type
+        fname = self.first_name
+        lname = self.last_name
+        login = self.username
         user_id = self.id
         return f"""User: id={user_id}
-        name: {name}
+        name: {fname} {lname}
         login: {login}
-        type: {type}
         """
 
 class Record( models.Model ):
@@ -38,7 +28,7 @@ class Record( models.Model ):
     that will provide the default date and time for the record.
 
     """
-    user_id = models.ForeignKey( User )
+    user_id = models.ForeignKey( BookUser )
     record_date = models.DateTimeField( auto_now=True, auto_created=True )
     user_date = models.DateField()
     user_time = models.TimeField()
