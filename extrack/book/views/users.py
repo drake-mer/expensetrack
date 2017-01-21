@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views import View
 import django.http as dj
 from django.views.decorators.csrf import csrf_exempt
 import rest_framework.response as rest
@@ -11,6 +12,36 @@ from pprint import pformat
 from ..models import BookUser
 
 # Create your views here.
+
+class UserView(View):
+
+    def get(self, request, user_id: int):
+        """
+        Retrieve the user info from the user_id given as argument.
+        You must be an admin to access this data or the corresponding user
+        """
+        try:
+            u = BookUser.objects.get(pk=user_id)
+        except BookUser.DoesNotExist:
+            raise dj.Http404("Unable to find this user")
+        else:
+            # return the user fields as a dictionary
+            return dj.JsonResponse(u.to_dict())
+
+    @csrf_exempt
+    def delete(self, request, user_id: int):
+        """
+        Delete the specified user from the user_id given as an argument.
+        You must be authenticated as an admin to be able to perform this operation
+        """
+        try:
+            u = BookUser.objects.get(pk=user_id)
+            u.delete()
+        except BookUser.DoesNotExist:
+            return dj.HttpResponseNotFound()
+        else:
+            return dj.HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
 
 @csrf_exempt
 def get_users(request):
@@ -36,7 +67,7 @@ def create_user(request):
     }
 
     my_user = BookUser.objects.create_user( username, **user_info )
-    return dj.HttpResponse(f"""CREATE USER REQUEST OK: ID={my_user.id}""")
+    return dj.HttpResponse(f"""CREATE USER REQUEST OK: ID={my_user.id}""")
 
 
 @csrf_exempt
