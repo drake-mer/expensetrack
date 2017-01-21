@@ -1,5 +1,5 @@
 {
   "name": "extrack-client",
   "version": "0.1",
-  "main": "client.js"
+  "main": "js/client.js"
 }

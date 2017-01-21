@@ -1,15 +1,137 @@
-<!doctype html>
-<html lang="en" ng-app="UI client for extrack">
-  <head>
-    <meta charset="utf-8">
-    <title>My HTML File</title>
-  </head>
-  <body>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"/>
-  <script src="jquery-3.1.1.min.js"/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-  <h1>Extrack Client </h1>
+  <title>Expense Tracker application</title>
+  <meta charset="utf-8">
 
 
-  </body>
+  <!-- meta definition for bootstrap template -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- External script and styles -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link href = "https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel = "stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="js/client.js"></script>
+  
+  <!-- User defined styles -->
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+      height=100px;
+    }
+
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 600px}
+
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height:auto;}
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <nav class="navbar navbar-inverse">
+    <!-- This first navbar is the header of our template -->
+    <div class="container-fluid">
+      <!-- Here goes the container that serves to define the subsequent styles 
+
+          Right here we are in the header that contains the logo + the buttons to
+            - create account
+            - delete account
+            - login
+      -->
+      <div class="navbar-header">
+        <!-- 
+         -->
+        <!-- <a class="navbar-brand" href="#">
+
+          <img class="img-circle" alt="Bill" width="70" src="static/dollar1.jpg"/>
+        </a> -->
+      </div>
+
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a id="login" href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+          <li><a id="create_user" href="#"><span class="glyphicon glyphicon-gift"></span> Create Account</a></li>
+          <li><a id="delete_user" href="#"><span class="glyphicon glyphicon-remove"></span> Delete Account</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div id='alert_not_logged' class="alert alert-warning alert-dismissible">
+      <a href="#" class="close">&times;</a>
+      <strong>Warning!</strong> You need to be logged to perform this action.
+    </div>
+  </nav>
+
+  <div class="container-fluid text-center">
+    <div class="row content">
+      <div class="col-sm-3 sidenav">
+        <p><button id="get_all_records" type="button" class="btn btn-info btn-block">
+          Retrieve all your expenses.</button></p>
+        <p><button id="get_weekly_record" type="button" class="btn btn-info btn-block">
+          Get expense data for a given week.
+        </button>
+        </p>
+        <p>
+          <button id="get_yearly_record" type="button" class="btn btn-info btn-block">
+              Get expense data for a given year.
+          </button>
+        </p>
+        <p class="center ui-datepicker-inline"><div id="datepicker" align="center"></div></p>
+      </div>
+      <div class="col-sm-9 text-left">
+        <div class="text-center">
+          <h1>ExTrack: The Expense Tracking Application</h1>
+        </div>
+        <div id="introductory-text" class="alert alert-warning alert-dismissible">
+          <a href="#" class="close">&times;</a>
+          <p id="introduction">
+            This is a single page application to interact with the ExTrack (Expense Tracking) application through
+            its REST API.
+          </p>
+          <p>
+            This View is available for any standard user. Users maybe created on the fly by anybody. However, to access
+            a more complete view and to be able to list all the user, you need to login as an administrator.
+          </p>
+          <p>
+            Administrator accounts are created upon request. An administrator can delete an user from the application,
+            subsequently deleting all the user's related records. So be careful when doing so.
+            An admin account is provided for testing purpose.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
 </html>
