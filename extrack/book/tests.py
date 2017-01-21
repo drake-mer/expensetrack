@@ -15,7 +15,7 @@ class RouteUserTest(TestCase):
     client=Client()
 
     def test_create_user(self):
-        res = self.client.get(reverse( 'create_user' ) )
+        res = self.client.get( reverse( 'create_user' ) )
         print(res)
         self.assertNotEqual( res.status_code, 404)
 

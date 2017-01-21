@@ -1,8 +1,6 @@
 from django.conf.urls import url
 
-from .views import users
-from .views import ops
-
+from .views import users, ops, perms
 
 urlpatterns = [
 
@@ -20,4 +18,6 @@ urlpatterns = [
     url(r'^record/update/(?P<record_id>[0-9]+)/$', ops.update_record_from_id, name='update_record'),
     url(r'^record/user/(?P<user_id>[0-9]+)/y/(?P<year>[0-9]{4})/w/(?P<week>[0-9]{1,2})/',
         ops.get_records_by_user_by_week, name='get_weekly_record'),
+
+    url(r'^login/$', perms.get_session, name='get_session' )
 ]

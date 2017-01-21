@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class BookUser( User ):
+    to_iterate_over = [ 'id', 'first_name', 'last_name', 'username' ]
     def __str__(self):
         fname = self.first_name
         lname = self.last_name
@@ -11,6 +12,9 @@ class BookUser( User ):
         name: {fname} {lname}
         login: {login}
         """
+    def to_dict(self):
+        return { key: self.__dict__[key] for key in self.to_iterate_over }
+
 
 class Record( models.Model ):
     """
