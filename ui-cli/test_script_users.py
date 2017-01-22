@@ -5,9 +5,9 @@ import json
 
 dec = json.JSONDecoder()
 
-test_to_run = []
-test_to_run += ['create']
-test_to_run += [ 'delete' ]
+# test_to_run = []
+# test_to_run += ['create']
+# test_to_run += [ 'delete' ]
 # test_to_run += [ 'update' ]
 # test_to_run += [ 'get_all' ]
 test_to_run += ['get']

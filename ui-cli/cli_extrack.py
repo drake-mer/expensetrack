@@ -47,7 +47,7 @@ def create_user( user=DEFAULT_USER ):
     CREATE_URL = "".join( x + "/" for x in [BASE_URL, 'user', 'create'] )
     r = requests.post(
         CREATE_URL,
-        data=DEFAULT_ACCOUNT
+        data=user
     )
     return r
 
@@ -64,18 +64,26 @@ def get_all_users():
     return r
 
 def get_usr(user_id):
-    GET_REC_USR_URL = "/".join([BASE_URL, 'user', 'get', str(user_id)])
+    GET_REC_USR_URL = "".join([ x + "/" for x in [BASE_URL, 'user', 'get', str(user_id)] ])
     return requests.get( GET_REC_USR_URL )
 
-def get_records_of_usr(user_id):
-    GET_REC_USR_URL = "/".join( [ BASE_URL, 'record', 'user', str(user_id) ] )
+def create_record(user_id, record={}):
+    GET_REC_USR_URL = "".join( [ x+"/" for x in [BASE_URL, 'record', 'user', str(user_id), 'add' ] ] )
+    return requests.post( GET_REC_USR_URL, data=record)
 
-def update_record( record_id ):
-    UP_REC_URL = "/".join( [ BASE_URL, 'record', "update", str(record_id) ] )
+def get_records_of_usr(user_id):
+    GET_REC_USR_URL = "".join( [x+"/" for x in [ BASE_URL, 'record', 'user', str(user_id) ]] )
+    return requests.get( GET_REC_USR_URL )
+
+def update_record( record_id, record={}):
+    UP_REC_URL = "".join( [ x + "/" for x in [ BASE_URL, 'record', "update", str(record_id) ] ] )
+    return requests.put( UP_REC_URL, data=record )
 
 def get_record( record_id ):
-    GET_REC_URL = "/".join( [ BASE_URL, 'record', str(record_id) ] )
+    GET_REC_URL = "".join( [x + "/" for x in [ BASE_URL, 'record', str(record_id) ] ])
+    return requests.get( GET_REC_URL )
 
 def delete_record( record_id ):
-    DEL_REC_URL = "/".join( [ BASE_URL, 'record', 'delete', str(record_id) ] )
+    DEL_REC_URL = "".join( [ x+"/" for x in [BASE_URL, 'record', 'delete', str(record_id) ] ])
+    return requests.delete( DEL_REC_URL )
 

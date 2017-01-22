@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from ..models import User, Record
+from django.http import HttpResponse, JsonResponse
+from ..models import Record, BookUser
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -11,9 +11,9 @@ def get_records(request, user_id: int):
     Get all the records of a given User_Id.
     You must have logged in successfully as that user or to be an admin
     """
-    return HttpResponse(f"""
-    GET_ALL_RECORDS_FROM_USER ID {user_id}
-    """)
+
+    all = Record.objects.filter( user_id=user_id )
+    return JsonResponse({ x.id: x.record_date for x in all })
 
 @csrf_exempt
 def get_record_from_id(request, record_id: int):
@@ -60,7 +60,14 @@ def add_record(request, user_id: int):
     Add a record as an user.
     You must be an authenticated user to execute this action or an admin.
     """
-    return HttpResponse(f"ADD_RECORD_REQUEST USER_ID {user_id}")
+    record = {
+        key: request.POST.get(key, None)
+        for key in ['user_id', 'user_date', 'user_time', 'value', 'description', 'comment']
+    }
+    record['user_id'] = BookUser.objects.get( pk=int(record['user_id']) )
+    my_rec = Record(**record)
+    my_rec.save()
+    return HttpResponse(f"ADD_RECORD_REQUEST SUCCESS {my_rec.id}")
 
 
 

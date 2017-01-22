@@ -11,8 +11,8 @@ urlpatterns = [
     url(r'^user/update/(?P<user_id>[0-9]+)/$', users.update_user, name='update_user'),
 
 
-    url(r'^record/get/user/(?P<user_id>[0-9]+)/$', ops.get_records, name='get_all_records_of_user'),
-    url(r'^record/get/(?P<record_id>[0-9]+)/$', ops.get_record_from_id, name='get_record'),
+    url(r'^record/user/(?P<user_id>[0-9]+)/$', ops.get_records, name='get_all_records_of_user'),
+    url(r'^record/(?P<record_id>[0-9]+)/$', ops.get_record_from_id, name='get_record'),
     url(r'^record/user/(?P<user_id>[0-9]+)/add/$', ops.add_record, name='add_record'),
     url(r'^record/delete/(?P<record_id>[0-9]+)/$', ops.delete_record, name='delete_record'),
     url(r'^record/update/(?P<record_id>[0-9]+)/$', ops.update_record_from_id, name='update_record'),
