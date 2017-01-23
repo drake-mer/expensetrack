@@ -1,21 +1,26 @@
-from django.shortcuts import render
-from django.views import View
-import django.http as dj
+from django.http.response import DjangoJSONEncoder
+from django.http.response import HttpResponse, HttpResponseNotFound, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-import rest_framework.response as rest
-from rest_framework import status
-from django.views.decorators.http import require_POST
-from django.forms.models import model_to_dict
 
-from pprint import pformat
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
 
 from ..models import BookUser
+from ..serializers import MetaBookUserSerializer, BookUserSerializer
 
 # Create your views here.
 
-class UserView(View):
+class BookUserViewAsList(APIView):
 
-    def get(self, request, user_id: int):
+    def get(self, request):
+        users = BookUser.objects.all()
+        serializer = MetaBookUserSerializer(users, many=True)
+        return JS
+
+
         """
         Retrieve the user info from the user_id given as argument.
         You must be an admin to access this data or the corresponding user
@@ -23,10 +28,10 @@ class UserView(View):
         try:
             u = BookUser.objects.get(pk=user_id)
         except BookUser.DoesNotExist:
-            raise dj.Http404("Unable to find this user")
+            raise Http404("Unable to find this user")
         else:
             # return the user fields as a dictionary
-            return dj.JsonResponse(u.to_dict())
+            return JsonResponse(u.to_dict())
 
     @csrf_exempt
     def delete(self, request, user_id: int):
@@ -38,22 +43,25 @@ class UserView(View):
             u = BookUser.objects.get(pk=user_id)
             u.delete()
         except BookUser.DoesNotExist:
-            return dj.HttpResponseNotFound()
+            return HttpResponseNotFound()
         else:
-            return dj.HttpResponse(status=status.HTTP_204_NO_CONTENT)
+            return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
 @csrf_exempt
+@api_view(['GET'])
 def get_users(request):
     """
     Get the list of all users.
     You must be authenticated as an admin to perform this operation.
     """
-    list_id = {str(user.id): user.username for user in BookUser.objects.all()}
-    return dj.JsonResponse(list_id)
+    users = BookUser.objects.all()
+    serializer = BookUserSerializer(users)
+    return JSONResponse(serializer.data)
 
 
 @csrf_exempt
+@api_view(['POST'])
 def create_user(request):
     """
     Create an user with info provided within the HTTP request.
@@ -67,10 +75,11 @@ def create_user(request):
     }
 
     my_user = BookUser.objects.create_user( username, **user_info )
-    return dj.HttpResponse(f"""CREATE USER REQUEST OK: ID={my_user.id}""")
+    return HttpResponse(f"""CREATE USER REQUEST OK: ID={my_user.id}""")
 
 
 @csrf_exempt
+@api_view(['PUT'])
 def update_user(request, user_id):
     """
     Update an user with the given information
@@ -78,10 +87,11 @@ def update_user(request, user_id):
     :param user_id: Primary Key of the user being modified
     :return:
     """
-    return dj.HttpResponse(f"""UPDATE_USER_REQUEST OK ID={user_id}""")
+    return HttpResponse(f"""UPDATE_USER_REQUEST OK ID={user_id}""")
 
 
 @csrf_exempt
+@api_view(['GET'])
 def get_user_from_id(request, user_id: int):
     """
     Retrieve the user info from the user_id given as argument.
@@ -90,13 +100,14 @@ def get_user_from_id(request, user_id: int):
     try:
         u = BookUser.objects.get(pk=user_id)
     except BookUser.DoesNotExist:
-        raise dj.Http404("Unable to find this user")
+        raise Http404("Unable to find this user")
     else:
-        # return the user fields as a dictionary
-        return dj.JsonResponse(u.to_dict())
+        serializer=MetaBookUserSerializer(u)
+        return JsonResponse(serializer.data)
 
 
 @csrf_exempt
+@api_view(['DELETE'])
 def delete_user_from_id(request, user_id: int):
     """
     Delete the specified user from the user_id given as an argument.
@@ -106,6 +117,6 @@ def delete_user_from_id(request, user_id: int):
         u = BookUser.objects.get( pk=user_id )
         u.delete()
     except BookUser.DoesNotExist:
-        return dj.HttpResponseNotFound()
+        return HttpResponseNotFound()
     else:
-        return dj.HttpResponse( status=status.HTTP_204_NO_CONTENT )
+        return HttpResponse( status=status.HTTP_204_NO_CONTENT )

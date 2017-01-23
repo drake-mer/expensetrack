@@ -57,7 +57,7 @@ def delete_user( user_id ):
     return r
 
 def get_all_users():
-    GET_ALL_USR_URL = "".join( x + "/" for x in [ BASE_URL, 'user', 'get' ] )
+    GET_ALL_USR_URL = "".join( x + "/" for x in [ BASE_URL, 'users' ] )
     r = requests.get(
         GET_ALL_USR_URL
     )
@@ -72,12 +72,12 @@ def create_record(user_id, record={}):
     return requests.post( GET_REC_USR_URL, data=record)
 
 def get_records_of_usr(user_id):
-    GET_REC_USR_URL = "".join( [x+"/" for x in [ BASE_URL, 'record', 'user', str(user_id) ]] )
+    GET_REC_USR_URL = "".join( [x+"/" for x in [ BASE_URL, 'records', 'user', str(user_id) ]] )
     return requests.get( GET_REC_USR_URL )
 
 def update_record( record_id, record={}):
     UP_REC_URL = "".join( [ x + "/" for x in [ BASE_URL, 'record', "update", str(record_id) ] ] )
-    return requests.put( UP_REC_URL, data=record )
+    return requests.post( UP_REC_URL, data=record )
 
 def get_record( record_id ):
     GET_REC_URL = "".join( [x + "/" for x in [ BASE_URL, 'record', str(record_id) ] ])

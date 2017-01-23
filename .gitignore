@@ -7,4 +7,5 @@ extrack/book/__pycache__/
 extrack/book/migrations/__pycache__/
 extrack/book/views/__pycache__/
 ui-cli/__pycache__/
-extrack/snippets/*
+extrack/snippets/
+extrack/snippets/*.py

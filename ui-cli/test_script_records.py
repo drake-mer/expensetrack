@@ -34,9 +34,11 @@ def random_record():
     return DEFAULT_RECORD
 
 test_to_run = []
-test_to_run += ['create_user']
-test_to_run += ['create_record']
-test_to_run += ['get_records']
+# test_to_run += ['create_user']
+# test_to_run += ['create_record']
+# test_to_run += ['get_records']
+test_to_run += ['get_record']
+# test_to_run += ['update_records']
 # test_to_run += ['delete_record']
 # test_to_run += ['update_record']
 
@@ -57,8 +59,22 @@ if 'create_record' in test_to_run:
 if 'get_records' in test_to_run:
     my = cli.get_records_of_usr( 4 )
     status_code = my.status_code
-    data = dec.decode(my.text)  # type: dict
+    data = dec.decode( my.text )  # type: dict
 
+if 'get_record' in test_to_run:
+    for x in range(9,10):
+        my = cli.get_record(x)
+        status_code = my.status_code
+        data = dec.decode( my.text )  # type: dict
+
+if 'update_records' in test_to_run:
+    my = cli.get_records_of_usr( 4 )
+    data = dec.decode(my.text)
+    for record_id in data.keys():
+        new_record = random_record()
+        new_record['comment'] = "That is an update"
+        new_record['description'] = "That is an update too"
+        cli.update_record( record_id, new_record )
 
 if 'get' in test_to_run:
     data = dec.decode(cli.get_all_users().text)
