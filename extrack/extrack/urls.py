@@ -16,6 +16,10 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+
+# TODO: remove the r'^admin/' url
+# and remove as well the admin application
 urlpatterns = [
-    url( r'^', include('restbook.urls'))
+    url( r'^admin/', admin.site.urls ),
+    url( r'^', include('restbook.urls') )
 ]

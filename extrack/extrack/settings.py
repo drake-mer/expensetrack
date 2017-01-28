@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'book.apps.BookConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,8 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'snippets.apps.SnippetsConfig',
-    'restbook.apps.RestbookConfig',
-    # 'book.apps.BookConfig'
+    'restbook.apps.RestbookConfig'
 ]
 
 MIDDLEWARE = [
@@ -76,7 +74,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    )
+    ),
 }
 
 WSGI_APPLICATION = 'extrack.wsgi.application'
@@ -95,21 +93,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+# no default validator
+AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization

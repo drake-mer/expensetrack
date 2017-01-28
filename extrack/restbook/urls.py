@@ -8,10 +8,10 @@ from .views import \
 
 urlpatterns = [
     url(r'^records/$', RecordListGeneric.as_view(), name='record-list' ),
-    url(r'^record/(?P<pk>[0-9]+)/$', RecordDetailGeneric.as_view(), name='record-detail'),
+    url(r'^records/(?P<pk>[0-9]+)/$', RecordDetailGeneric.as_view(), name='record-detail'),
 
     url(r'^users/$', UserListGeneric.as_view(), name='user-list' ),
-    url(r'^user/(?P<pk>[0-9]+)/$', UserDetailGeneric.as_view(), name='user-detail' )
+    url(r'^users/(?P<pk>[0-9]+)/$', UserDetailGeneric.as_view(), name='user-detail' )
 ]
 
 urlpatterns += [

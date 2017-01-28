@@ -52,7 +52,7 @@ def create_user( user=DEFAULT_USER ):
     return r
 
 def delete_user( user_id ):
-    DEL_USR_URL = "".join( x + "/" for x in [ BASE_URL, 'user', 'delete', str(user_id) ] )
+    DEL_USR_URL = "".join( x + "/" for x in [ BASE_URL, 'user', str(user_id) ] )
     r = requests.delete( DEL_USR_URL )
     return r
 
@@ -76,7 +76,7 @@ def get_records_of_usr(user_id):
     return requests.get( GET_REC_USR_URL )
 
 def update_record( record_id, record={}):
-    UP_REC_URL = "".join( [ x + "/" for x in [ BASE_URL, 'record', "update", str(record_id) ] ] )
+    UP_REC_URL = "".join( [ x + "/" for x in [ BASE_URL, 'record', str(record_id) ] ] )
     return requests.post( UP_REC_URL, data=record )
 
 def get_record( record_id ):
@@ -84,6 +84,6 @@ def get_record( record_id ):
     return requests.get( GET_REC_URL )
 
 def delete_record( record_id ):
-    DEL_REC_URL = "".join( [ x+"/" for x in [BASE_URL, 'record', 'delete', str(record_id) ] ])
+    DEL_REC_URL = "".join( [ x+"/" for x in [BASE_URL, 'record', str(record_id) ] ])
     return requests.delete( DEL_REC_URL )
 
