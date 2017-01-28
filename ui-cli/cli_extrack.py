@@ -44,7 +44,7 @@ def get_session( user=DEFAULT_USER ):
     return r
 
 def create_user( user=DEFAULT_USER ):
-    CREATE_URL = "".join( x + "/" for x in [BASE_URL, 'user', 'create'] )
+    CREATE_URL = "".join( x + "/" for x in [BASE_URL, 'users'] )
     r = requests.post(
         CREATE_URL,
         data=user
@@ -52,7 +52,7 @@ def create_user( user=DEFAULT_USER ):
     return r
 
 def delete_user( user_id ):
-    DEL_USR_URL = "".join( x + "/" for x in [ BASE_URL, 'user', str(user_id) ] )
+    DEL_USR_URL = "".join( x + "/" for x in [ BASE_URL, 'users', str(user_id) ] )
     r = requests.delete( DEL_USR_URL )
     return r
 
@@ -64,7 +64,7 @@ def get_all_users():
     return r
 
 def get_usr(user_id):
-    GET_REC_USR_URL = "".join([ x + "/" for x in [BASE_URL, 'user', 'get', str(user_id)] ])
+    GET_REC_USR_URL = "".join([ x + "/" for x in [BASE_URL, 'users', str(user_id)] ])
     return requests.get( GET_REC_USR_URL )
 
 def create_record(user_id, record={}):
@@ -87,3 +87,10 @@ def delete_record( record_id ):
     DEL_REC_URL = "".join( [ x+"/" for x in [BASE_URL, 'record', str(record_id) ] ])
     return requests.delete( DEL_REC_URL )
 
+def get_auth_token(data=None):
+    AUTH_URL = "".join( [x+"/" for x in [BASE_URL, 'api-token-auth']])
+    return requests.post(AUTH_URL, data=data)
+
+def get_admin_auth(name='david', password='password123'):
+    result = get_auth_token( data={'username': name, 'password': password} )
+    return result

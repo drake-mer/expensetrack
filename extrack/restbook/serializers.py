@@ -7,7 +7,6 @@ from rest_framework import serializers
 from restbook.models import Record
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     records = serializers.PrimaryKeyRelatedField(many=True, queryset=Record.objects.all())
     records_to_skip = ('password')

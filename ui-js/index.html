@@ -1,59 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-
+<head lang="en">
   <title>Expense Tracker application</title>
   <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" media="screen" href="bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+        <link href="css/bootstrap-datetimepicker.css" rel="stylesheet">
 
-
-  <!-- meta definition for bootstrap template -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- External script and styles -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link href = "https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel = "stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="js/client.js"></script>
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+        <script src="js/bootstrap-datetimepicker.js"></script>
+        <script src="js/client.js"></script>
   
-  <!-- User defined styles -->
-  <style>
-    /* Remove the navbar's default margin-bottom and rounded borders */
-    .navbar {
-      margin-bottom: 0;
-      border-radius: 0;
-      height=100px;
-    }
+    <!-- User defined styles -->
+    <style>
+      /* Remove the navbar's default margin-bottom and rounded borders */
+      .navbar {
+        margin-bottom: 0;
+        border-radius: 0;
+        height=100px;
+      }
 
-    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-    .row.content {height: 600px}
+      /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+      .row.content {height: 600px}
 
-    /* Set gray background color and 100% height */
-    .sidenav {
-      padding-top: 20px;
-      background-color: #f1f1f1;
-      height: 100%;
-    }
-
-    /* Set black background color, white text and some padding */
-    footer {
-      background-color: #555;
-      color: white;
-      padding: 15px;
-    }
-
-    /* On small screens, set height to 'auto' for sidenav and grid */
-    @media screen and (max-width: 767px) {
+      /* Set gray background color and 100% height */
       .sidenav {
-        height: auto;
+        padding-top: 20px;
+        background-color: #f1f1f1;
+        height: 100%;
+      }
+
+      /* Set black background color, white text and some padding */
+      footer {
+        background-color: #555;
+        color: white;
         padding: 15px;
       }
-      .row.content {height:auto;}
-    }
-  </style>
-</head>
+
+      /* On small screens, set height to 'auto' for sidenav and grid */
+      @media screen and (max-width: 767px) {
+        .sidenav {
+          height: auto;
+          padding: 15px;
+        }
+        .row.content {height:auto;}
+      }
+    </style>
+  </head>
 
 <body>
 
@@ -76,19 +74,34 @@
           <img class="img-circle" alt="Bill" width="70" src="static/dollar1.jpg"/>
         </a> -->
       </div>
-
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav navbar-right">
-          <li><a id="login" href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+
           <li><a id="create_user" href="#"><span class="glyphicon glyphicon-gift"></span> Create Account</a></li>
           <li><a id="delete_user" href="#"><span class="glyphicon glyphicon-remove"></span> Delete Account</a></li>
+
+        </ul>
+        <ul class="nav navbar-nav navbar-left">
+          <li id="logging_form">
+            <form class="form-inline" id="get_auth_form">
+              <input type="username" class="form-control" id="login_form" placeholder="username">
+              <input type="password" class="form-control" id="passwd_form" placeholder="password">
+              <button id="login" type="submit" class="btn btn-primary glyphicon glyphicon-log-in"> Login</button>
+            </form>
+          </li>
+
+          <li id="loggout_form">
+            <form class="form-inline" id="logout_user">
+              <button id="logout" type="submit" class="btn glyphicon glyphicon-log-out">Logout</button>
+            </form>
+          </li>
         </ul>
       </div>
 
     </div>
 
     <div id='alert_not_logged' class="alert alert-warning alert-dismissible">
-      <a href="#" class="close">&times;</a>
+      <a href="#" class="close" id="hide_not_logged_warning">&times;</a>
       <strong>Warning!</strong> You need to be logged to perform this action.
     </div>
   </nav>
@@ -96,25 +109,36 @@
   <div class="container-fluid text-center">
     <div class="row content">
       <div class="col-sm-3 sidenav">
-        <p><button id="get_all_records" type="button" class="btn btn-info btn-block">
+        <p><button id="get_list_user" type="button" class="btn btn-info btn-block">
+          Fetch user list</button></p>
+        <p><button id="get_list_record" type="button" class="btn btn-info btn-block">
           Retrieve all your expenses.</button></p>
-        <p><button id="get_weekly_record" type="button" class="btn btn-info btn-block">
-          Get expense data for a given week.
-        </button>
+        <p>
+          <button id="get_weekly_record" type="button" class="btn btn-info btn-block">
+            Expenses of the selected week
+          </button>
         </p>
         <p>
           <button id="get_yearly_record" type="button" class="btn btn-info btn-block">
-              Get expense data for a given year.
+            Expenses of the selected year
           </button>
         </p>
-        <p class="center ui-datepicker-inline"><div id="datepicker" align="center"></div></p>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker1'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
       </div>
+
       <div class="col-sm-9 text-left">
         <div class="text-center">
           <h1>ExTrack: The Expense Tracking Application</h1>
         </div>
-        <div id="introductory-text" class="alert alert-warning alert-dismissible">
-          <a href="#" class="close">&times;</a>
+        <div id="introductory_text" class="alert alert-warning alert-dismissible">
+          <a href="#" class="close" id="close_intro_cross">&times;</a>
           <p id="introduction">
             This is a single page application to interact with the ExTrack (Expense Tracking) application through
             its REST API.
@@ -128,6 +152,16 @@
             subsequently deleting all the user's related records. So be careful when doing so.
             An admin account is provided for testing purpose.
           </p>
+        </div>
+        <div id="record_list" class="alert alert-dismissible">
+          <h2>Record List Results<a href="#" class="close" id="record_list_cross">&times;</a></h2>
+        </div>
+        <div id="user_list" class="alert alert-dismissible">
+          <h2>User List Results<a href="#" class="close" id="user_list_cross">&times;</a></h2>
+        </div>
+        <div id="debug_window" class="alert alert-warning alert-dismissible">
+          <h2>Debugging results<a href="#" class="close" id="clean_debug_cross">&times;</a></h2>
+
         </div>
 
       </div>

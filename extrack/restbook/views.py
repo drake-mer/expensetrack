@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
 
-from .permissions import IsAdminOrReadOnly, UserManagementDetailLevel, UserManagementListLevel
+from .permissions import RecordManagementDetailLevel, RecordManagementListLevel
+from .permissions import UserManagementDetailLevel, UserManagementListLevel
 
 
 from restbook.models import Record
@@ -35,22 +36,36 @@ class JSONResponse(HttpResponse):
 class RecordListGeneric(generics.ListCreateAPIView):
     queryset = Record.objects.all()
     serializer_class = RecordSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (RecordManagementListLevel,)
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        if user and not user.is_staff:
+            return Record.objects.filter(owner=user.id)
+        else:
+            return Record.objects.all()
 
     def perform_create(self, serializer):
         serializer.save( owner=self.request.user )
 
+
 class RecordDetailGeneric(generics.RetrieveUpdateDestroyAPIView):
     queryset = Record.objects.all()
     serializer_class = RecordSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (RecordManagementDetailLevel,)
 
 class UserListGeneric(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (UserManagementListLevel,)
 
+
 class UserDetailGeneric(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (UserManagementDetailLevel,)
+
