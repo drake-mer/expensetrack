@@ -45,7 +45,7 @@ class RecordListGeneric(generics.ListCreateAPIView):
         """
         user = self.request.user
         if user and not user.is_staff:
-            return Record.objects.filter(owner=user.id)
+            return Record.objects.filter(owner_id=user.id)
         else:
             return Record.objects.all()
 
