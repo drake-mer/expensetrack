@@ -4,3 +4,5 @@ db.sqlite3
 TOPTAL.e4p
 extrack/snippets/
 *.pyc
+ui-js/formRecord.html
+ui-js/formUser.html
