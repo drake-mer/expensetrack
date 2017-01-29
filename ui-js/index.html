@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <head lang="en">
-  <title>Expense Tracker application</title>
+  <title>ExTrack</title>
   <meta charset="utf-8">
         <link rel="stylesheet" type="text/css" media="screen" href="bootstrap-3.3.7-dist/css/bootstrap.min.css" />
         <link href="css/bootstrap-datetimepicker.css" rel="stylesheet">
-
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-        <![endif]-->
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script type="text/javascript" src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
@@ -112,7 +106,7 @@
         <p><button id="get_list_user" type="button" class="btn btn-info btn-block">
           Fetch user list</button></p>
         <p><button id="get_list_record" type="button" class="btn btn-info btn-block">
-          Retrieve all your expenses.</button></p>
+          Fetch record list</button></p>
         <p>
           <button id="get_weekly_record" type="button" class="btn btn-info btn-block">
             Expenses of the selected week
@@ -140,12 +134,10 @@
         <div id="introductory_text" class="alert alert-warning alert-dismissible">
           <a href="#" class="close" id="close_intro_cross">&times;</a>
           <p id="introduction">
-            This is a single page application to interact with the ExTrack (Expense Tracking) application through
-            its REST API.
+            This is a single page application to interact with the ExTrack REST API.
           </p>
           <p>
-            This View is available for any standard user. Users maybe created on the fly by anybody. However, to access
-            a more complete view and to be able to list all the user, you need to login as an administrator.
+            Users maybe created on the fly by anybody.
           </p>
           <p>
             Administrator accounts are created upon request. An administrator can delete an user from the application,
@@ -155,14 +147,15 @@
         </div>
         <div id="record_list_div" class="alert alert-info alert-dismissible">
           <h2 id="record_list_header">Record List Results<a href="#" class="close" id="record_list_cross">&times;</a></h2>
+          <ul id="record_stat_list"></ul>
           <ul id="record_list"></ul>
         </div>
-        <div id="user_list" class="alert alert-info alert-dismissible">
-          <h2>User List Results<a href="#" class="close" id="user_list_cross">&times;</a></h2>
+        <div id="user_list_div" class="alert alert-info alert-dismissible">
+          <h2 id="user_list_header">User List Results<a href="#" class="close" id="user_list_cross">&times;</a></h2>
+          <ul id="user_list"></ul>
         </div>
         <div id="debug_window" class="alert alert-warning alert-dismissible">
           <h2>Debugging results<a href="#" class="close" id="clean_debug_cross">&times;</a></h2>
-
         </div>
 
       </div>

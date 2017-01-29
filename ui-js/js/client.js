@@ -1,5 +1,3 @@
-
-
 $(function(){
     var globalAjaxSettings = {
       async: false,
@@ -93,7 +91,8 @@ $(function(){
         }
         debug();
     }
-    // for debugging purpose
+
+    // for debugging purpose, bypass authentication
     init_page('david', true, "b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8");
 
     // ajax requests
@@ -101,14 +100,15 @@ $(function(){
         var auth_callback = function(data, status){
             init_page('', status=='success', data.token);
         }
-        /* perform AJAX request */
         LAST_HTTP_ANSWER = $.post( url, { username: username, password: password }, auth_callback );
     }
 
     var sendListRecordsRequest = function(url, token){
-        var user_list_callback = function(data, status){
+        var record_list_callback = function(data, status){
             /* this callback function processes the API results */
             LAST_HTTP_ANSWER = data;
+            RECORD_LIST = data;
+            showSelectedRecords(data);
             debug();
         }
         /* perform AJAX request */
@@ -117,7 +117,7 @@ $(function(){
             // dataType: 'json',
             headers: { "Authorization": "Token " + token },
             processData: false,
-            success: user_list_callback,
+            success: record_list_callback,
         });
     }
 
@@ -125,6 +125,8 @@ $(function(){
         var user_list_callback = function(data, status){
             /* this callback function processes the API results */
             LAST_HTTP_ANSWER = data;
+            USER_LIST = data;
+            showSelectedUsers(data)
             debug();
         }
         /* perform AJAX request */
@@ -134,7 +136,7 @@ $(function(){
             processData: false,
             success: user_list_callback,
         });
-    }
+    };
 
     var deleteRecordRequest = function(url, token){
         var delete_user_callback = function(data, status){
@@ -146,9 +148,9 @@ $(function(){
         $.ajax(url, {
             type: 'DELETE',
             headers: { "Authorization": "Token " + token },
-            success: record_list_callback,
+            success: delete_user_callback,
         });
-    }
+    };
 
     var updateUserRequest = function(url, uid, token, newData){
         var update_user_callback = function(data, status){
@@ -157,7 +159,6 @@ $(function(){
             debug();
         }
         /* perform AJAX request */
-
         var url_route = user_url(uid);
         $.ajax( url_route, {
             type: 'PUT',
@@ -165,7 +166,7 @@ $(function(){
             data: newData,
             success: user_list_callback,
         });
-    }
+    };
 
 
     var updateRecordRequest = function(rid, newData){
@@ -182,7 +183,7 @@ $(function(){
             data: newData,
             success: user_list_callback,
         });
-    }
+    };
 
     var deleteUserRequest = function(uid){
         var delete_user_callback = function(data, status){
@@ -191,14 +192,14 @@ $(function(){
             debug();
         }
         /* perform AJAX request */
-        url_route = usr_url(uid)
-        $.ajax(url_route, {
+        $.ajax(usr_url(uid), {
             type: 'DELETE',
             headers: { "Authorization": "Token " + GLOBAL_STATE.token },
-            success: user_list_callback,
+            success: delete_user_callback,
         });
-    }
+    };
 
+    // User Interface specific events and methods
     var showNotLoggedWarning=function(){
         $('#alert_not_logged').show()
     }
@@ -210,7 +211,7 @@ $(function(){
 
     $("#hide_not_logged_warning").click( function(){
         $("#alert_not_logged").hide();
-    })
+    });
 
     $("#close_intro_cross").click( function(){
         $("#introductory_text").hide();
@@ -220,15 +221,20 @@ $(function(){
         clearRecordList();
     });
 
+    $("#user_list_cross").click( function(){
+        clearUserList();
+    });
+
     $("#logout_user").submit(function(){
+        // set the tuple (username, logged, token) to (null, false, null)
         init_page(null, false, null);
     });
 
 
     $("#get_auth_form").submit(function(){
-        username = $('#login_form')[0].value;
-        password = $('#passwd_form')[0].value;
-        url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.auth_route + "/";
+        var username = $('#login_form')[0].value;
+        var password = $('#passwd_form')[0].value;
+        var url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.auth_route + "/";
         sendAuthenticationRequest(url, username, password);
     });
 
@@ -236,8 +242,7 @@ $(function(){
         if (!is_logged()){
                 showNotLoggedWarning();
         } else {
-            url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.user_route + "/";
-            sendListUsersRequest( url, GLOBAL_STATE.token)
+            sendListUsersRequest( usr_url(), GLOBAL_STATE.token);
         }
     });
 
@@ -245,8 +250,7 @@ $(function(){
         if (!is_logged()){
                 showNotLoggedWarning();
         } else {
-            url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.record_route + "/";
-            sendListUsersRequest( url, GLOBAL_STATE.token)
+            sendListRecordsRequest( rec_url(), GLOBAL_STATE.token);
         }
     });
 
@@ -261,41 +265,44 @@ $(function(){
         alert("You tried to delete user")
     });
 
+    var clearRecordList = function(){
+        $("#record_list").empty(); // remove all the records from the document
+    }
+
+    var clearUserList = function(){
+        $("#user_list").empty(); // remove all the records from the document
+    }
+
     var filterAgainstWeek = function(){
         date = DATE_PICKER.data("DateTimePicker").date();
         day_of_week = date.isoWeekday() ; // 1 is monday, ..., 7 is sunday
         if (date){
             var max_date = date.add(7-day_of_week, 'days');
             var min_date = date.subtract(day_of_week-1, 'days');
-            var is_between = function(record){ return moment(record.user_date).isBetween(min_date, max_date);
-            SELECTED_RECORDS = RECORD_LIST.filter( is_between );
-            showSelectedRecords();
+            var is_between = function(record){ return moment(record.user_date).isBetween(min_date, max_date); };
+            showSelectedRecords(RECORD_LIST.filter( is_between ));
         }
     }
-        // if no date is set, there is nothing to filter
-    }
+
+    // if no date is set, there is nothing to filter
     var filterAgainstYear = function(){
         date = DATE_PICKER.data("DateTimePicker").date();
+        day_of_year = moment().dayOfYear();
         if (date){
-            var max_date = date.add(7-day_of_week, 'days');
-            var min_date = date.subtract(day_of_week-1, 'days');
+            var max_date = date.add(365-day_of_year, 'days');
+            var min_date = date.subtract(day_of_year-1, 'days');
             var is_between = function(record){ return moment(record.user_date).isBetween(min_date, max_date) };
             showSelectedRecords(RECORD_LIST.filter( is_between ));
         }
     }
 
-    var clearRecordList = function(){
-        $("#record_list").empty(); // remove all the records from the document
-    }
-
 
 
     var enableStats = function(recordList){
-        var granTotal = recordList.reduce( function(a,b){ return a.amount + b.amount ;}, 0);
-
+        var granTotal = recordList.reduce( function(a,b){ return (a + parseFloat(b.value)) ;}, 0);
         if (recordList.length && granTotal){
-            var maxDate = recordList[0].user_date;
-            var minDate = recordList[0].user_date;
+            var maxDate = moment(recordList[0].user_date);
+            var minDate = moment(recordList[0].user_date);
             for (i=1; i<recordList.length; i++){
                 if (moment(recordList[i].user_date).isAfter(maxDate, 'day')){
                     maxDate = moment(recordList[i]);
@@ -304,8 +311,12 @@ $(function(){
                     minDate = moment(recordList[i].user_date)
                 }
             }
-            numberOfDays = maxDate.subtract(minDate).days()
-            showStats(granTotal, numberOfDays);
+            numberOfYears = maxDate.year() - minDate.year();
+            numberOfDays = maxDate.dayOfYear() - minDate.dayOfYear();
+            // That is not really precise due to years with 366 days but it will do
+            // with an adequate precision
+            deltaInDays = 365*numberOfYears + numberOfDays;
+            showStats(granTotal, deltaInDays);
         } else {
             showStats(granTotal, 1);
         }
@@ -319,19 +330,47 @@ $(function(){
             var averageExpense = total ;
         }
         $('#record_stat_list').empty();
-        $('#record_stat_list').append("<ul id=\"record_stat_list\">\n"+
-        "<li>Average expense per day: " + averageExpense + "</li>\n"+
-        "<li>Average running on " + numberOfDays + " days</li>\n" + "</ul>\n")
+        $('#record_stat_list').append(
+        "<li>Average expense running on "+numberOfDays+" days: " + (averageExpense).toFixed(2) + " $/day</li>")
+
     }
 
 
     var showSelectedRecords = function(recordList){
         clearRecordList();
         var appendRecordToView = function( record ){
-            $('.record').after("<li class=\"unique_record\">"+record.user_date+"</li>")
+            $('#record_list').append('<li class="unique_record_'+record.id+'">'+
+            '<form id="unique_record_form_'+record.id+'" class="form-inline">'+
+            '<input name="user_date" class="form-control" type="date"  value="'+record.user_date+ '" >'+
+            '<input name="user_time" class="form-control" type="time"  value="'+record.user_time+ '" >'+
+            '<input name="value" class="form-control" type="text"  value="'+record.value+ '" >'+
+            '<input name="description" class="form-control" type="text"  value="'+record.description+ '" >'+
+            '<input name="comment" class="form-control" type="text"  value="'+record.comment+ '" >'+
+            '<button class="btn btn-warning">update</button>' +
+            '<button class="btn btn-danger">delete</button>' +
+            '</form></li>');
         };
         recordList.map(appendRecordToView);
         enableStats(recordList);
+    }
+
+    var showSelectedUsers = function(userList){
+        clearUserList();
+        var appendUserToView = function( user ){
+            $('#user_list').append(
+                '<li class="unique_user_'+user.id+'">'+
+                '<form id="unique_user_form_'+user.id+'" class="form-inline">'+
+                    '<input name="first_name" class="form-control" type="text" value="' + user.first_name + '" >' +
+                    '<input name="last_name" class="form-control" type="text" value="' + user.last_name + '" >' +
+                    '<input name="username" class="form-control" type="text" value="' + user.username + '" >' +
+                    '<input name="is_staff" class="form-control" type="boolean"  value="" >' +
+                    '<input name="password" class="form-control" type="text"  value="" >' +
+                    '<button class="btn btn-warning">update</button>' +
+                    '<button class="btn btn-danger">delete</button>' +
+                '</form></li>'
+            );
+        };
+        userList.map(appendUserToView);
     }
 
     var deleteCheckedRecords = function(){
