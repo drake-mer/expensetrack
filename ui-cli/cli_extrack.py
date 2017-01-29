@@ -47,7 +47,8 @@ def create_user( user=DEFAULT_USER ):
     CREATE_URL = "".join( x + "/" for x in [BASE_URL, 'users'] )
     r = requests.post(
         CREATE_URL,
-        data=user
+        data=user,
+        headers = { 'Authorization': "Token b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8"}
     )
     return r
 
@@ -91,6 +92,6 @@ def get_auth_token(data=None):
     AUTH_URL = "".join( [x+"/" for x in [BASE_URL, 'api-token-auth']])
     return requests.post(AUTH_URL, data=data)
 
-def get_admin_auth(name='david', password='password123'):
+def get_admin_auth(name='david', password='test'):
     result = get_auth_token( data={'username': name, 'password': password} )
     return result
