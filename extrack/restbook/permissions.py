@@ -10,7 +10,7 @@ class UserManagementListLevel(permissions.BasePermission):
     def has_permission(self, request, view):
 
         # anything is allowed for an admin
-        if request.user and request.user.is_staff:
+        if request.user and request.user.is_authenticated:
             return True
         else:
             return False

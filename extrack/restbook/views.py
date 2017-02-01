@@ -2,11 +2,11 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, Http404
 
 from rest_framework import generics
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from rest_framework import status
+from rest_framework.authtoken.models import Token
 
 from .permissions import RecordManagementDetailLevel, RecordManagementListLevel
 from .permissions import UserManagementDetailLevel, UserManagementListLevel
@@ -50,6 +50,8 @@ class RecordListGeneric(generics.ListCreateAPIView):
             return Record.objects.all()
 
     def perform_create(self, serializer):
+        """To perform create, one need to precise exactly from which user
+        is coming the request"""
         serializer.save( owner=self.request.user )
 
 
@@ -68,4 +70,17 @@ class UserDetailGeneric(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (UserManagementDetailLevel,)
+
+
+class AuthTokenView(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key,
+                         'user_id': user.id,
+                         'username': user.username,
+                         'is_staff': user.is_staff,})
 

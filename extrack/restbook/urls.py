@@ -5,7 +5,8 @@ from .views import \
     RecordDetailGeneric, \
     RecordListGeneric, \
     UserListGeneric, \
-    UserDetailGeneric
+    UserDetailGeneric, \
+    AuthTokenView
 
 from .authentication import \
     Login, \
@@ -27,5 +28,5 @@ urlpatterns += [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 urlpatterns += [
-    url(r'^api-token-auth/', views.obtain_auth_token)
+    url(r'^api-token-auth/', AuthTokenView.as_view())
 ]
