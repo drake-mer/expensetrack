@@ -2,8 +2,11 @@
 <head lang="en">
   <title>ExTrack</title>
   <meta charset="utf-8">
+    <script
+    src="https://code.jquery.com/jquery-3.1.1.js"
+    integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+    crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="bootstrap-3.3.7-dist/css/bootstrap.min.css" />
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="js/client.js"></script>
 </head>
@@ -12,25 +15,21 @@
     <!-- This first navbar is the header of our template -->
     <div class="container-fluid">
       <div class="navbar-header"></div>
-      <div class="collapse navbar-collapse" id="myNavbar">
-        <ul class="nav navbar-nav navbar-left">
-          <li id="logging_form">
+      <div class="collapse navbar-collapse inline" id="myNavbar">
+          <div id="logging_form">
             <form class="form-inline" id="get_auth_form">
               <input type="username" class="form-control" id="login_form" placeholder="username">
               <input type="password" class="form-control" id="passwd_form" placeholder="password">
-              <input id="login" type="submit" class="btn btn-primary glyphicon glyphicon-log-in"> Login</input>
+              <button id="login_button" type="button" class="btn-primary glyphicon glyphicon-log-in">Login</button>
             </form>
-          </li>
-          <li id="loggout_form">
+          </div>
+          <div>
             <form class="form-inline" id="logout_user">
-              <button id="logout" type="submit" class="btn glyphicon glyphicon-log-out">Logout</button>
+              <button id="logout_button" type="button" class="btn-danger glyphicon glyphicon-log-out">Logout</button>
             </form>
-          </li>
+          </div>
         </ul>
       </div>
-    </div>
-    <div id='alert_not_logged' class="alert alert-warning alert-dismissible">
-      <a href="#" class="close" id="hide_not_logged_warning">&times;</a>
     </div>
 
     <div id='generic_warning' class="alert alert-warning alert-dismissible">
@@ -38,6 +37,9 @@
     </div>
     <div id='generic_error' class="alert alert-danger alert-dismissible">
       <a href="#" class="close" id="hide_generic_error">&times;</a>
+    </div>
+    <div id='generic_success' class="alert alert-success alert-dismissible">
+      <a href="#" class="close" id="hide_generic_success">&times;</a>
     </div>
   </nav>
   <div class="text-justify container-fluid">
@@ -66,7 +68,7 @@
             <input name="value" class="form-control" type="text"  placeholder="amount ($)">
             <input name="description" class="form-control" type="text"  placeholder="description" >
             <input name="comment" class="form-control" type="text"  placeholder="comment" >
-            <button class="btn btn-success" action="submit">Create record</button>
+            <button class="btn btn-success" type="button">Create record</button>
             </form>
         </p>
 
@@ -77,7 +79,7 @@
               <input name="last_name" class="form-control" type="text" placeholder="lastname">
               <input name="username" class="form-control" type="text" placeholder="Login">
               <input name="password" class="form-control" type="text"  placeholder="password" >
-              <button class="btn btn-success" action="submit">Create User</button>
+              <button class="btn btn-success" type="button">Create User</button>
               </form>
         </p>
       </div>
@@ -113,11 +115,6 @@
           </div>
           <ul id="user_list"></ul>
         </div>
-
-        <div id="debug_window" class="alert alert-warning alert-dismissible">
-          <h2>Debugging results<a href="#" class="close" id="clean_debug_cross">&times;</a></h2>
-        </div>
-
       </div>
     </div>
   </div>

@@ -22,44 +22,43 @@ $(function(){
     }
 
     clean_warning = function (){
-        $("#alert_not_logged").hide();
         $("#generic_warning").hide();
         $("#generic_error").hide();
+        $("#generic_success").hide();
+        clearAuth();
     };
-    clean_warning();
 
-    var globalDebug = function(){
-        $('#debug_window').append("<p class='debug_message'>GLOBAL: "+JSON.stringify(GLOBAL_STATE)+"</p>\n");
-    }
-
-    var httpDebug = function(){
-        if (LAST_HTTP_ANSWER){
-            $('#debug_window').append("<p class='debug_message'>HTTP: " + LAST_HTTP_ANSWER +"</p>\n");
-        } else {
-            $('#debug_window').append("<p class=\"debug_message\">HTTP: " + LAST_HTTP_ANSWER + "</p>\n");
-        }
-    }
-
-    var debug = function(x){
-        if (x){
-            console.log(x);
-        }
-        if (GLOBAL_STATE.debug){
-            globalDebug(); 
-            httpDebug();
-        }
-    }
 
     var error_callback = function(a,b,c){
-        LAST_HTTP_ANSWER = a;
         issueError(
             a.responseText + "<br><strong>Erreur " + a.status + "</strong>"
         );
-    }
+    };
+
+    var success_callback = function(data,status){
+        issueSuccess(
+            "<br><strong>HTTP status: " + status + "</strong>" + "<br>" +
+             JSON.stringify(data)
+        );
+    };
+
+    var clearAuth = function(){
+
+        $('#loggout_form').hide();
+        $('#logging_form').show();
+        GLOBAL_STATE.user = null;
+    };
+
+    var setAuth = function(httpComing){
+        $('#loggout_form').show();
+        $('#logging_form').hide();
+        GLOBAL_STATE.user = httpComing;
+    };
+
 
     var is_logged = function(){
         return GLOBAL_STATE.logged;
-    }
+    };
 
     GLOBAL_STATE = {
         /* Strong convention to be followed:
@@ -68,26 +67,24 @@ $(function(){
         ** When the global state has to be changed, one has to call init_page() with adequate
         ** parameters.
         */
-        logged: false,
-        token: null,
-        user: {
-            username: "",
-            is_staff: false,
-        },
         url: "http://localhost:8000",
         auth_route: "api-token-auth",
         user_route: "users",
         record_route: "records",
         debug: true,
+        user: null
+    };
+
+
+    var get_token = function(){
+
+        if (GLOBAL_STATE.user){
+            var token = GLOBAL_STATE.user.token;
+        } else {
+            var token = null;
+        }
+        return token;
     }
-
-    LAST_HTTP_ANSWER = null;
-
-    USER_LIST = null;
-    RECORD_LIST = null;
-
-    SELECTED_USERS = null;
-    SELECTED_RECORDS = null;
 
     var usr_url = function(uid){
         url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.user_route + "/";
@@ -95,7 +92,7 @@ $(function(){
             url = url + uid + "/";
         }
         return url;
-    }
+    };
 
     var rec_url = function(rid){
         url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.record_route + "/";
@@ -103,59 +100,28 @@ $(function(){
             url = url + rid + "/";
         }
         return url;
-    }
+    };
 
-    var init_page = function(user, logged, token){
-        GLOBAL_STATE.logged=logged;
-        GLOBAL_STATE.token=token;
-        if ( (!logged) || (!token) ){
-            $('#loggout_form').hide();
-            $('#logging_form').show();
-            GLOBAL_STATE.username=null;
-        } else {
-            $('#loggout_form').show();
-            $('#logging_form').hide();
-            if (user){
-                GLOBAL_STATE.user=user;
-            }
-        }
-
-        clean_warning();
-        clearRecordList();
-        clearUserList();
-        $('#generic_warning').hide();
-        if (!GLOBAL_STATE.debug){
-            $('#debug_window').hide();
-        }
-    }
-
-    // for debugging purpose, bypass authentication
-    init_page(  {username:'david', is_staff: true, id: 1},
-                true,
-                "b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8"  );
 
     // ajax requests
     var sendAuthenticationRequest = function(url, username, password){
-        var auth_callback = function(data, status){
-            init_page('', status=='success', data.token);
-            LAST_HTTP_ANSWER = data;
-        }
+        var auth_callback = function(data, status) {
+            issueSuccess("Successful Login!");
+            setAuth(data);
+        };
         $.ajax(url, {
             method: 'POST',
             data: { "username": username, "password": password },
             success: auth_callback,
             error: error_callback,
         });
-    }
-
+    };
 
     var sendListRecordsRequest = function(url, token, callback){
         var record_list_callback = function(data, status){
             /* this callback function processes the API results */
-            LAST_HTTP_ANSWER = data;
-            RECORD_LIST = data;
             showSelectedRecords(data);
-            debug("recordList default callback");
+            success_callback(data, status);
         }
         /* perform AJAX request */
         if (!callback){
@@ -176,10 +142,8 @@ $(function(){
     var sendListUsersRequest = function(url, token){
         var user_list_callback = function(data, status){
             /* this callback function processes the API results */
-            LAST_HTTP_ANSWER = data;
-            USER_LIST = data;
-            showSelectedUsers(data)
-            debug();
+            showSelectedUsers(data);
+            success_callback(data, status);
         }
         /* perform AJAX request */
         $.ajax(url, {
@@ -193,19 +157,12 @@ $(function(){
 
 
     var addRequest = function(newData, url_route, callback){
-        if (!callback){
-            var callback = function(data, status){
-                /* this callback function processes the API results */
-                LAST_HTTP_ANSWER = data;
-                debug();
-            }
-        }
         /* perform AJAX request */
         $.ajax( url_route, {
             type: 'POST',
-            headers: { "Authorization": "Token " + GLOBAL_STATE.token },
+            headers: { "Authorization": "Token " + GLOBAL_STATE.user.token },
             data: newData,
-            success: callback,
+            success: success_callback,
             error: error_callback,
         });
     };
@@ -219,106 +176,80 @@ $(function(){
     };
 
 
-    var updateUserRequest = function(url, uid, token, newData){
-        var update_user_callback = function(data, status){
-            /* this callback function processes the API results */
-            LAST_HTTP_ANSWER = data;
-            debug();
-        }
-        /* perform AJAX request */
-        var url_route = user_url(uid);
-        $.ajax( url_route, {
+    var updateUserRequest = function(url, token, newData){
+        $.ajax( url, {
             type: 'PUT',
             headers: { "Authorization": "Token " + token },
             data: newData,
-            success: user_list_callback,
+            success: success_callback,
             error: error_callback,
         });
     };
 
-
-    var updateRecordRequest = function(rid, newData){
-        var update_user_callback = function(data, status){
-            /* this callback function processes the API results */
-            LAST_HTTP_ANSWER = data;
-            debug();
-        }
-        /* perform AJAX request */
-        var url_route = rec_url(rid);
-        $.ajax( url_route, {
-            type: 'PUT',
-            headers: { "Authorization": "Token " + GLOBAL_STATE.token },
-            data: newData,
-            success: user_list_callback,
-            error: error_callback,
-        });
+    var updateUserRequest = function(uid, newData){
+        updateRequest(usr_url(uid), GLOBAL_STATE.user.token, newData)
     };
 
-    var deleteRecordRequest = function(url, token){
-        var delete_user_callback = function(data, status){
-            /* this callback function processes the API results */
-            LAST_HTTP_ANSWER = data;
-            debug();
-        }
+    var updateUserRequest = function(uid, newData){
+        updateRequest(rec_url(uid), GLOBAL_STATE.user.token, newData)
+    };
+
+
+
+    var deleteRequest = function(url, token){
+
         /* perform AJAX request */
         $.ajax(url, {
             type: 'DELETE',
             headers: { "Authorization": "Token " + token },
-            success: delete_user_callback,
+            success: success_callback,
             error: error_callback,
         });
+    } ;
+
+    var deleteRecordRequest = function(rid){
+        url = rec_url(rid);
+        deleteRequest(url, get_token());
     };
 
 
     var deleteUserRequest = function(uid){
-        var delete_user_callback = function(data, status){
-            /* this callback function processes the API results */
-            LAST_HTTP_ANSWER = data;
-            debug();
-        }
-        /* perform AJAX request */
-        $.ajax(usr_url(uid), {
-            type: 'DELETE',
-            headers: { "Authorization": "Token " + GLOBAL_STATE.token },
-            success: delete_user_callback,
-            error: error_callback,
-        });
+        url = usr_url(uid);
+        deleteRequest(url, get_token());
     };
-
-    // User Interface specific events and methods
-    var showNotLoggedWarning=function(){
-        $('#alert_not_logged').show()
-    }
 
 
     // User Interface specific events and methods
     var issueWarning=function(message){
-        $('.generic_warning_message').remove();
-        $('#generic_warning').append('<p class="generic_warning_message"><strong>Warning!</strong>'+message+"</p>");
+        // $('.generic_warning_message').remove();
+        $('#generic_warning').append('<p class="generic_warning_message"><strong>Warning! </strong>'+message+"</p>");
         $('#generic_warning').show();
+    };
+
+    // User Interface specific events and methods
+    var issueError=function(message){
+        // $('.generic_error_message').remove();
+        $('#generic_error').append('<p class="generic_error_message"><strong>Error! </strong>'+message+"</p>");
+        $('#generic_error').show();
+    };
+
+    // User Interface specific events and methods
+    var issueSuccess=function(message){
+        // $('.generic_success_message').remove();
+        $('#generic_success').append('<p class="generic_sucess_message"><strong>Success! </strong>'+message+"</p>");
+        $('#generic_success').show();
     };
 
     $("#hide_generic_warning").click( function(){
         $("#generic_warning").hide();
     });
-    // User Interface specific events and methods
-    var issueError=function(message){
-        $('.generic_error_message').remove();
-        $('#generic_error').append('<p class="generic_error_message"><strong>Error!</strong>'+message+"</p>");
-        $('#generic_error').show();
-    };
+
+    $('#hide_generic_success').click( function(){
+        $("#generic_success").hide();
+    });
 
     $("#hide_generic_error").click( function(){
         $("#generic_error").hide();
-    });
-
-    // User events
-    $("#clean_debug_cross").click( function(){
-        $(".debug_message").empty();
-    });
-
-    $("#hide_not_logged_warning").click( function(){
-        $("#alert_not_logged").hide();
     });
 
     $("#close_intro_cross").click( function(){
@@ -333,13 +264,12 @@ $(function(){
         clearUserList();
     });
 
-    $("#logout_user").submit(function(){
-        // set the tuple (username, logged, token) to (null, false, null)
-        init_page(null, false, null);
+    $("#logout_button").click(function(){
+        clearAuth();
     });
 
 
-    $("#get_auth_form").submit(function(){
+    $("#login_button").click(function(){
         var username = $('#login_form')[0].value;
         var password = $('#passwd_form')[0].value;
         var url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.auth_route + "/";
@@ -347,51 +277,41 @@ $(function(){
     });
 
     $("#get_list_user").click(function(){
-        if (!is_logged()){
-                showNotLoggedWarning();
-        } else {
-            sendListUsersRequest( usr_url(), GLOBAL_STATE.token);
-        }
+        sendListUsersRequest( usr_url(), get_token());
     });
 
+
     $("#get_list_record").click(function(){
-        if (!is_logged()){
-                showNotLoggedWarning();
-        } else {
-            sendListRecordsRequest( rec_url(), GLOBAL_STATE.token);
-        }
+        sendListRecordsRequest( rec_url(), get_token());
     });
 
     $("#filter_by_week").click(function(){
-        if (!is_logged()){
-                showNotLoggedWarning();
-        } else {
-            var filterByWeek = function(data, status){
-                var date = $('#global_date')[0].valueAsDate;
-                if (GLOBAL_STATE.debug){
-                    var date = new Date("February 2, 2016");
-                }
-                if (date){
-                    var day_of_week = date.getDay() ; // 0 is monday, ..., 6 is sunday
-                    var max_date = addDays(date, 6-day_of_week);
-                    var min_date = addDays(date, -day_of_week);
-                    var is_between = function(record){
-                        var record_Date = new Date(record.user_date);
-                        return (record_Date <= max_date && record_Date >= min_date);
-                    };
-                    showSelectedRecords(data.filter( is_between ));
-                } else {
-                    issueWarning("You must select a date with the date picker");
-                }
+        // that's a big callback
+        var filterByWeek = function(data, status){
+            var date = $('#global_date')[0].valueAsDate;
+            if (date){
+                var day_of_week = date.getDay() ; // 0 is monday, ..., 6 is sunday
+                var max_date = addDays(date, 6-day_of_week);
+                var min_date = addDays(date, -day_of_week);
+                var is_between = function(record){
+                    var record_Date = new Date(record.user_date);
+                    return (record_Date <= max_date && record_Date >= min_date);
+                };
+                showSelectedRecords(data.filter( is_between ));
+            } else {
+                issueWarning("You must select a date with the date picker");
             }
-            sendListRecordsRequest( rec_url(), GLOBAL_STATE.token, filterByWeek);
-
         }
+        // here is the request
+        sendListRecordsRequest( rec_url(), get_token(), filterByWeek);
     });
 
-    $('#new_record_form').submit(function(){
+    $('#new_record_form').click(function(){
+        // fetch back the content of the form as an array
         var newDataFromForm = $('#new_record_form').serializeArray();
         result = new Object();
+
+        // use reduce to transform the data into a correct dictionary object
         newDataFromForm.reduce(function(a,b){
             a[b.name]=b.value;
             return a;
@@ -399,20 +319,18 @@ $(function(){
         addRecordRequest( result );
     });
 
-    $('#new_user_form').submit(function(){
+    $('#new_user_form').click(function(){
+        // fetch back the content of the form as an array
         var newDataFromForm = $('#new_user_form').serializeArray();
         result = new Object();
+
+        // use reduce to transform the data into a correct dictionary object
         newDataFromForm.reduce(function(a,b){
             a[b.name]=b.value;
             return a;
         }, result);
         addUserRequest( result );
     });
-
-    $("#delete_user").click(function(){
-        alert("You tried to delete user")
-    });
-
 
 
     var enableStats = function(recordList){
@@ -465,13 +383,22 @@ $(function(){
             '<input name="value" class="form-control" type="text"  value="'+record.value+ '" >'+
             '<input name="description" class="form-control" type="text"  value="'+record.description+ '" >'+
             '<input name="comment" class="form-control" type="text"  value="'+record.comment+ '" >'+
-            '<button class="btn btn-warning">update</button>' +
-            '<button class="btn btn-danger">delete</button>' +
+            '<button type="button" class="btn btn-warning update_record" value="' + record.id + '">update</button>' +
+            '<button type="button" class="delete_record btn btn-danger" value="' + record.id + '">delete</button>' +
             '</form></li>');
         };
         recordList.map(appendRecordToView);
         enableStats(recordList);
+
+        $(".delete_record").click(function(){
+            alert("You tried to delete record");
+        });
+
+        $(".update_record").click(function(){
+            alert("You tried to update record");
+        });
     }
+
 
     var showSelectedUsers = function(userList){
         clearUserList();
@@ -479,7 +406,6 @@ $(function(){
             if (user.is_staff){
                 var is_staff="checked";
             }
-
             $('#user_list').append(
                 '<div class="unique_user_'+user.id+'">'+
                 '<form id="unique_user_form_'+user.id+'" class="form-inline">'+
@@ -488,24 +414,24 @@ $(function(){
                     '<input name="last_name" class="form-control" type="text" placeholder="lastname" value="' + user.last_name + '" >' +
                     '<input name="username" class="form-control" type="text" placeholder="username" value="' + user.username + '" >' +
                     '<input name="password" class="form-control" type="text" placeholder="password" value="" >' +
-                    '<button class="btn btn-warning">update</button>' +
-                    '<button class="btn btn-danger">delete</button>' +
+                    '<button type="button" class="btn btn-warning update_user" value="' + user.id +'">update</button>' +
+                    '<button type="button" class="btn btn-danger delete_user" value="' + user.id +'">delete</button>' +
                 '</form></div>'
             );
         };
         userList.map(appendUserToView);
-    }
 
-    var deleteCheckedRecords = function(){
-        // must read the DOM to call delete Record on the selected records
-        // easy
-        var i=0;
-    }
+        $(".delete_user").click(function(){
+            deleteUserRequest(this.value);
 
-    var deleteCheckedUsers = function(){
-        // must read the DOM to call delete Record on the selected users
-        var i=0;
-    }
+        });
 
+        $(".update_user").click(function(){
+            updateUserRequest(this.value);
+        });
+    }
+    /* for debugging purpose */
+    setAuth( { username:'david', is_staff: true, id: 1,
+               token:"b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8" } );
 });
 
