@@ -16,3 +16,5 @@ DEFAULT_ACCOUNT = {
 
 my = cli.get_admin_auth()
 print(my.text)
+my = cli.get_user_auth()
+print(my.text)
