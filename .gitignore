@@ -6,3 +6,4 @@ extrack/snippets/
 *.pyc
 ui-js/formRecord.html
 ui-js/formUser.html
+extrack/restbook/migrations/__pycache__/*
