@@ -65,6 +65,17 @@ class UserListGeneric(generics.ListCreateAPIView):
     serializer_class = UserSerializer
     permission_classes = (UserManagementListLevel,)
 
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        if user and not user.is_staff:
+            return User.objects.filter(id=user.id)
+        else:
+            return User.objects.all()
+
 
 class UserDetailGeneric(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()

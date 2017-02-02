@@ -29,8 +29,8 @@ class Record( models.Model ):
     user_date = models.DateField()
     user_time = models.TimeField()
     value = models.DecimalField( decimal_places=2, max_digits=15 )
-    description = models.CharField( max_length=50 )
-    comment = models.CharField( max_length=200 )
+    description = models.CharField( max_length=100 )
+    comment = models.CharField( max_length=500 )
 
     class Meta:
         ordering = ('id',)
