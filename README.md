@@ -41,12 +41,9 @@ can deal with user authentication and can be used to script any operations wishe
 
 This module is also used to run a whole bunch of test with the pytest framework.
 
-To run the tests, you can do at the root of the project:
-```
-$ pytest
-```
+To launch the tests, run the `pytest` command at the root of the project. Use `pytest --help`
+for additional options.
 
-Providing that the pytest framework is installed on your computer.
 
 ## Graphical User Interface
 

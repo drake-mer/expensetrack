@@ -22,12 +22,12 @@ $(function(){
     };
 
     var clearWindow = function (){
-        $("#generic_warning").hide();
         $("#generic_warning").empty();
-        $("#generic_error").hide();
         $("#generic_error").empty();
-        $("#generic_success").hide();
         $("#generic_success").empty();
+        $("#generic_success").hide();
+        $("#generic_error").hide();
+        $("#generic_warning").hide();
         clearRecordList();
         clearUserList();
     };
@@ -245,55 +245,60 @@ $(function(){
 
     // User Interface specific events and methods
     var issueWarning=function(message){
-        // $('.generic_warning_message').remove();
         $('#generic_warning').append('<p class="generic_warning_message"><strong>Warning! </strong>' + message + "</p>");
         $('#generic_warning').show();
     };
 
     // User Interface specific events and methods
     var issueError=function(message){
-        // $('.generic_error_message').remove();
-        $('#generic_error').append('<p class="generic_error_message"><strong>Error! </strong>' + message + "</p>");
         $('#generic_error').show();
+        $('#generic_error').append('<p class="generic_error_message"><strong>Error! </strong>' + message + "</p>");
     };
 
     // User Interface specific events and methods
     var issueSuccess=function(message){
-        // $('.generic_success_message').remove();
         $('#generic_success').append('<p class="generic_sucess_message"><strong>Success! </strong>'+ message + '</p>');
         $('#generic_success').show();
     };
+
 
     $("#hide_generic_warning").click( function(){
         $("#generic_warning").empty();
         $("#generic_warning").hide();
     });
 
+
     $('#hide_generic_success').click( function(){
         $("#generic_success").empty();
         $("#generic_success").hide();
     });
+
 
     $("#hide_generic_error").click( function(){
         $("#generic_error").empty();
         $("#generic_error").hide();
     });
 
+
     $("#close_intro_cross").click( function(){
         $("#introductory_text").hide();
     });
+
 
     $("#help_button").click( function(){
         $("#introductory_text").show();
     });
 
+
     $("#record_list_cross").click( function(){
         clearRecordList();
     });
 
+
     $("#user_list_cross").click( function(){
         clearUserList();
     });
+
 
     $("#logout_button").click(function(){
         clearAuth();
@@ -306,6 +311,7 @@ $(function(){
         var url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.auth_route + "/";
         sendAuthenticationRequest(url, username, password);
     });
+
 
     $("#get_list_user").click(function(){
         sendListUsersRequest( usr_url(), get_token());
