@@ -1,39 +1,13 @@
 # ExTrack : simple HTTP REST API for expense tracking
 
-## Warning
-
-Throughout, this doc, we assume that the user is using a Linux system 
-with the following requirements:
- 
-* bash/ksh/zsh/sh/...
-* a python shell and the pip program (https://pip.pypa.io)
-* a recent browser allowing javascript execution (chromium/firefox in a late version)
-
-The application of this doc to a different system (windows, *BSD, Minix, ...) 
-should be possible with minimal changes.  
-
-## Installation
- 
-In the command line interface, execute:
-
-```pip install requirements.txt```
-
-This will install Django, the django-rest-framework, the django-cors-headers application, pytest and 
-all their dependancies if they are not met on your system.
-
-If you you want install the requirements in your user directory, 
-use the `--user` flag and don't forget to add the `~/.local/lib/python3.6/site-packages/`
-to your `PYTHONPATH` environment variable. 
-
-The use of virtual environments is not covered by this doc but should
-still be possible.
-
 ## ExTrack API
 
 ### Introduction
 This is a simple API  based on Django and Django Rest Framework to keep a book of expenses up to date,
+There is at the moment only two user roles : 
 
-There is at the moment only two user roles : simple users and admin user.
+* simple users 
+* admin user.
 
 The admin users may create/update/delete any user
 The simple users may create users but only do update/deletion on the very account with which they are logged.
@@ -43,7 +17,7 @@ admin users can basically create/update/delete any record.
 
 The API is accessed through HTTP with the following verbs:
 
-* GET: used to retrieve users
+* GET: used to retrieve users/records
 * POST: used to create records/users
 * PUT: used to update users
 * DELETE: used to delete users
