@@ -1,4 +1,4 @@
-# ExTrack : simple HTTP REST API for expense tracking
+# ExTrack : simple HTTP REST API
 
 ## ExTrack API
 
