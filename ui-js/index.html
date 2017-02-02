@@ -14,22 +14,32 @@
   <nav class="navbar navbar-inverse">
     <!-- This first navbar is the header of our template -->
     <div class="container-fluid">
-      <div class="navbar-header"></div>
-      <div class="collapse navbar-collapse inline" id="myNavbar">
-          <div id="logging_form">
-            <form class="form-inline" id="get_auth_form">
+    <div class="navbar-header">
+    <a class="navbar-brand" href="#">ExTrack</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li>
+        <form class="form-inline" id="get_auth_form">
               <input type="username" class="form-control" id="login_form" placeholder="username">
               <input type="password" class="form-control" id="passwd_form" placeholder="password">
-              <button id="login_button" type="button" class="btn-primary glyphicon glyphicon-log-in">Login</button>
-            </form>
-          </div>
-          <div>
-            <form class="form-inline" id="logout_user">
-              <button id="logout_button" type="button" class="btn-danger glyphicon glyphicon-log-out">Logout</button>
-            </form>
-          </div>
-        </ul>
-      </div>
+        </form>
+      </li>
+      <li>
+        <button id="login_button" type="button" class="btn-primary">
+          <span class="glyphicon glyphicon-log-in"></span>Login
+        </button>
+      </li>
+      <li >
+        <button id="logout_button" type="button" class="btn-danger">
+          <span class="glyphicon glyphicon-log-out"></span>Logout
+        </button>
+      </li>
+      <li>
+        <button id="help_button" type="button" class="btn-info">
+          <span class="glyphicon glyphicon-question-sign"></span>Help
+        </button>
+      </li>
+    </ul>
     </div>
 
     <div id='generic_warning' class="alert alert-warning alert-dismissible">
@@ -87,7 +97,7 @@
         <div class="text-center">
           <h1>ExTrack: The Expense Tracking Application</h1>
         </div>
-        <div id="introductory_text" class="alert alert-warning alert-dismissible">
+        <div id="introductory_text" class="alert alert-success alert-dismissible">
           <a href="#" class="close" id="close_intro_cross">&times;</a>
           <ul><li><p id="introduction">
             This is a single page application to interact with the ExTrack REST API.
@@ -99,6 +109,9 @@
           </p></li><li>
           <p>
             Records will be attached to the user making the request
+          </p></li><li>
+          <p>
+            You can close this help and display it again with « help » button.
           </p></li></ul>
         </div>
         <div id="record_list_div" class="alert alert-info alert-dismissible">

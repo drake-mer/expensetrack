@@ -4,28 +4,49 @@ $(function(){
         var result = new Date(date);
         result.setDate(result.getDate() + days);
         return result;
-    }
+    };
 
     Date.prototype.dayOfYear= function(){
         var j1= new Date(this);
         j1.setMonth(0, 0);
         return Math.round((this-j1)/8.64e7);
-    }
+    };
 
     var clearRecordList = function(){
         $('#record_stat_list').empty();
         $(".unique_record").remove(); // remove all the records from the document
-    }
+    };
 
     var clearUserList = function(){
         $("#user_list").empty(); // remove all the records from the document
-    }
+    };
 
-    clean_warning = function (){
+    var clearWindow = function (){
         $("#generic_warning").hide();
+        $("#generic_warning").empty();
         $("#generic_error").hide();
+        $("#generic_error").empty();
         $("#generic_success").hide();
-        clearAuth();
+        $("#generic_success").empty();
+        clearRecordList();
+        clearUserList();
+    };
+
+
+
+    var clearAuth = function(){
+        clearWindow();
+        $('#loggout_form').hide();
+        $('#get_auth_form').show();
+        $('#login_button').show();
+        GLOBAL_STATE.user = null;
+    };
+
+    var setAuth = function(httpComing){
+        $('#login_button').hide();
+        $('#get_auth_form').hide();
+        $('#loggout_form').show();
+        GLOBAL_STATE.user = httpComing;
     };
 
 
@@ -35,6 +56,7 @@ $(function(){
         );
     };
 
+
     var success_callback = function(data,status){
         issueSuccess(
             "<br><strong>HTTP status: " + status + "</strong>" + "<br>" +
@@ -42,30 +64,10 @@ $(function(){
         );
     };
 
-    var clearAuth = function(){
-
-        $('#loggout_form').hide();
-        $('#logging_form').show();
-        GLOBAL_STATE.user = null;
-    };
-
-    var setAuth = function(httpComing){
-        $('#loggout_form').show();
-        $('#logging_form').hide();
-        GLOBAL_STATE.user = httpComing;
-    };
-
-
-    var is_logged = function(){
-        return GLOBAL_STATE.logged;
-    };
 
     GLOBAL_STATE = {
         /* Strong convention to be followed:
-        ** Only the init_page() function may modify this object
-        ** Other method can read it for convenience but should never be used to set fields values
-        ** When the global state has to be changed, one has to call init_page() with adequate
-        ** parameters.
+        ** Nothing is to be followed. Just trust in the force.
         */
         url: "http://localhost:8000",
         auth_route: "api-token-auth",
@@ -76,15 +78,29 @@ $(function(){
     };
 
 
+    var dataFromForm = function(data){
+        // input data are usually objects returned by the jQuery .serializeArray()
+        // method working on forms
+        result = new Object();
+        // use reduce to transform the data into a correct dictionary object
+        data.reduce( function(a,b){
+            a[b.name]=b.value;
+            return a;
+        }, result );
+
+        return result;
+    };
+
+
     var get_token = function(){
 
-        if (GLOBAL_STATE.user){
+        if (GLOBAL_STATE.user && GLOBAL_STATE.user.token){
             var token = GLOBAL_STATE.user.token;
         } else {
             var token = null;
         }
         return token;
-    }
+    };
 
     var usr_url = function(uid){
         url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.user_route + "/";
@@ -93,6 +109,7 @@ $(function(){
         }
         return url;
     };
+
 
     var rec_url = function(rid){
         url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.record_route + "/";
@@ -117,6 +134,7 @@ $(function(){
         });
     };
 
+
     var sendListRecordsRequest = function(url, token, callback){
         var record_list_callback = function(data, status){
             /* this callback function processes the API results */
@@ -136,7 +154,7 @@ $(function(){
             success: callback,
             error: error_callback,
         });
-    }
+    };
 
 
     var sendListUsersRequest = function(url, token){
@@ -167,6 +185,7 @@ $(function(){
         });
     };
 
+
     var addUserRequest = function(newData){
         addRequest(newData, usr_url());
     };
@@ -176,7 +195,7 @@ $(function(){
     };
 
 
-    var updateUserRequest = function(url, token, newData){
+    var updateRequest = function(url, token, newData){
         $.ajax( url, {
             type: 'PUT',
             headers: { "Authorization": "Token " + token },
@@ -186,18 +205,17 @@ $(function(){
         });
     };
 
-    var updateUserRequest = function(uid, newData){
-        updateRequest(usr_url(uid), GLOBAL_STATE.user.token, newData)
-    };
 
     var updateUserRequest = function(uid, newData){
-        updateRequest(rec_url(uid), GLOBAL_STATE.user.token, newData)
+        updateRequest(usr_url(uid), get_token(), newData);
     };
 
+    var updateRecordRequest = function(uid, newData){
+        updateRequest(rec_url(uid), get_token(), newData);
+    };
 
 
     var deleteRequest = function(url, token){
-
         /* perform AJAX request */
         $.ajax(url, {
             type: 'DELETE',
@@ -205,8 +223,14 @@ $(function(){
             success: success_callback,
             error: error_callback,
         });
-    } ;
+    };
 
+
+    /* TODO: one could update dynamically the state of the page
+    ** by also removing the corresponding form to this RECORD
+    ** BUT this is additional complexity. Better to wait until
+    ** everything is just fine
+    */
     var deleteRecordRequest = function(rid){
         url = rec_url(rid);
         deleteRequest(url, get_token());
@@ -222,38 +246,45 @@ $(function(){
     // User Interface specific events and methods
     var issueWarning=function(message){
         // $('.generic_warning_message').remove();
-        $('#generic_warning').append('<p class="generic_warning_message"><strong>Warning! </strong>'+message+"</p>");
+        $('#generic_warning').append('<p class="generic_warning_message"><strong>Warning! </strong>' + message + "</p>");
         $('#generic_warning').show();
     };
 
     // User Interface specific events and methods
     var issueError=function(message){
         // $('.generic_error_message').remove();
-        $('#generic_error').append('<p class="generic_error_message"><strong>Error! </strong>'+message+"</p>");
+        $('#generic_error').append('<p class="generic_error_message"><strong>Error! </strong>' + message + "</p>");
         $('#generic_error').show();
     };
 
     // User Interface specific events and methods
     var issueSuccess=function(message){
         // $('.generic_success_message').remove();
-        $('#generic_success').append('<p class="generic_sucess_message"><strong>Success! </strong>'+message+"</p>");
+        $('#generic_success').append('<p class="generic_sucess_message"><strong>Success! </strong>'+ message + '</p>');
         $('#generic_success').show();
     };
 
     $("#hide_generic_warning").click( function(){
+        $("#generic_warning").empty();
         $("#generic_warning").hide();
     });
 
     $('#hide_generic_success').click( function(){
+        $("#generic_success").empty();
         $("#generic_success").hide();
     });
 
     $("#hide_generic_error").click( function(){
+        $("#generic_error").empty();
         $("#generic_error").hide();
     });
 
     $("#close_intro_cross").click( function(){
         $("#introductory_text").hide();
+    });
+
+    $("#help_button").click( function(){
+        $("#introductory_text").show();
     });
 
     $("#record_list_cross").click( function(){
@@ -290,12 +321,13 @@ $(function(){
         var filterByWeek = function(data, status){
             var date = $('#global_date')[0].valueAsDate;
             if (date){
-                var day_of_week = date.getDay() ; // 0 is monday, ..., 6 is sunday
-                var max_date = addDays(date, 6-day_of_week);
-                var min_date = addDays(date, -day_of_week);
+                // 1 is monday, ..., 6 is saturday, 7 is sunday
+                var day_of_week = (date.getDay()+6)%7 + 1 ;
+                var max_date = addDays(date, 7-day_of_week);
+                var min_date = addDays(date, -day_of_week+1);
                 var is_between = function(record){
                     var record_Date = new Date(record.user_date);
-                    return (record_Date <= max_date && record_Date >= min_date);
+                    return (record_Date < max_date && record_Date > min_date);
                 };
                 showSelectedRecords(data.filter( is_between ));
             } else {
@@ -308,28 +340,11 @@ $(function(){
 
     $('#new_record_form').click(function(){
         // fetch back the content of the form as an array
-        var newDataFromForm = $('#new_record_form').serializeArray();
-        result = new Object();
-
-        // use reduce to transform the data into a correct dictionary object
-        newDataFromForm.reduce(function(a,b){
-            a[b.name]=b.value;
-            return a;
-        }, result);
-        addRecordRequest( result );
+        addRecordRequest( dataFromForm( $('#new_record_form').serializeArray() ) );
     });
-
-    $('#new_user_form').click(function(){
+    $('#new_user_form').click( function(){
         // fetch back the content of the form as an array
-        var newDataFromForm = $('#new_user_form').serializeArray();
-        result = new Object();
-
-        // use reduce to transform the data into a correct dictionary object
-        newDataFromForm.reduce(function(a,b){
-            a[b.name]=b.value;
-            return a;
-        }, result);
-        addUserRequest( result );
+        addUserRequest( dataFromForm( $('#new_user_form').serializeArray() ) );
     });
 
 
@@ -366,15 +381,17 @@ $(function(){
         }
         $('#record_stat_list').empty();
         $('#record_stat_list').append(
-        "<h3>Average expense running on <strong>"+
-        numberOfDays+"</strong> days: <strong>" +
-        (averageExpense).toFixed(2) + " $/day</strong></h3>"
+            "<h3>Average expense running on <strong>"+
+            numberOfDays+"</strong> days: <strong>You spent " +
+            (averageExpense).toFixed(2) + " $ a day</strong></h3>"
         );
     }
 
 
     var showSelectedRecords = function(recordList){
+
         clearRecordList();
+
         var appendRecordToView = function( record ){
             $('#record_list').append('<li class="unique_record" id="unique_record_'+record.id+'">'+
             '<form id="unique_record_form_'+record.id+'" class="form-inline">'+
@@ -387,15 +404,17 @@ $(function(){
             '<button type="button" class="delete_record btn btn-danger" value="' + record.id + '">delete</button>' +
             '</form></li>');
         };
+
         recordList.map(appendRecordToView);
         enableStats(recordList);
 
-        $(".delete_record").click(function(){
-            alert("You tried to delete record");
+        $(".delete_record").click( function(){
+            deleteRecordRequest(this.value, newData);
         });
 
         $(".update_record").click(function(){
-            alert("You tried to update record");
+            var newData = dataFromForm($('#'+this.parentNode.getAttribute('id')).serializeArray());
+            updateRecordRequest(this.value, newData);
         });
     }
 
@@ -419,17 +438,19 @@ $(function(){
                 '</form></div>'
             );
         };
+
         userList.map(appendUserToView);
 
         $(".delete_user").click(function(){
             deleteUserRequest(this.value);
-
         });
 
         $(".update_user").click(function(){
-            updateUserRequest(this.value);
+            var newData = dataFromForm($('#'+this.parentNode.getAttribute('id')).serializeArray());
+            updateUserRequest(this.value, newData);
         });
     }
+
     /* for debugging purpose */
     setAuth( { username:'david', is_staff: true, id: 1,
                token:"b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8" } );
