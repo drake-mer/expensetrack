@@ -7,3 +7,4 @@ extrack/snippets/
 ui-js/formRecord.html
 ui-js/formUser.html
 extrack/restbook/migrations/__pycache__/*.py
+.cache/*
