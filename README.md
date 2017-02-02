@@ -1,19 +1,23 @@
-# ExTrack : simple HTTP REST API
+# Expense Tracker API
 
-## ExTrack API
+## Intro
 
-### Introduction
-This is a simple API  based on Django and Django Rest Framework to keep a book of expenses up to date,
+A simple API  based on Django and Django Rest Framework to keep a book of expenses up to date,
+
+## Users
+
 There is at the moment only two user roles : 
 
-* simple users 
-* admin user.
+* simple users : may create users but only do update/deletion on 
+the very account with which they are logged.
+* admin user : may create/update/delete any user
 
-The admin users may create/update/delete any user
-The simple users may create users but only do update/deletion on the very account with which they are logged.
+In the same fashion, simple users may create/update/delete 
+records only if they are owner of this records, while
+admin users can basically update/delete any record
+(but record created by an admin will be owned by that admin).
 
-In the same fashion, simple users may create/update/delete records only if they are owners of this record, while
-admin users can basically create/update/delete any record.
+## HTTP Verbs
 
 The API is accessed through HTTP with the following verbs:
 
@@ -28,7 +32,7 @@ The API is accessed through HTTP with the following verbs:
 * `POST http://localhost:8000/users/` : create a new user with the data provided in the HTTP body request.
 * `DELETE http://localhost:8000/users/8` : delete the user with user_id=8 (only if you are admin or this user)
 
-### Authentication
+## Authentication
 With curl, you would do:
 where the Token string is fetched from the server upon correct authentication
 
@@ -58,13 +62,3 @@ Further improvements may include :
 * filter by level of expenses
 * display stats on expense
 * improve ergonomy of input forms
-
-
-
-
-
-
-
-
-
-
