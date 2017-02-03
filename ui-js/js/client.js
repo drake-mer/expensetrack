@@ -22,12 +22,10 @@ $(function(){
     };
 
     var clearWindow = function (){
-        $("#generic_warning").empty();
-        $("#generic_error").empty();
-        $("#generic_success").empty();
-        $("#generic_success").hide();
-        $("#generic_error").hide();
-        $("#generic_warning").hide();
+        refreshSelectors();
+        cleanError();
+        cleanSuccess();
+        cleanWarning();
         clearRecordList();
         clearUserList();
     };
@@ -35,10 +33,10 @@ $(function(){
 
 
     var clearAuth = function(){
-        clearWindow();
         $('#loggout_form').hide();
         $('#get_auth_form').show();
         $('#login_button').show();
+        clearWindow();
         GLOBAL_STATE.user = null;
     };
 
@@ -46,6 +44,7 @@ $(function(){
         $('#login_button').hide();
         $('#get_auth_form').hide();
         $('#loggout_form').show();
+        clearWindow();
         GLOBAL_STATE.user = httpComing;
     };
 
@@ -215,12 +214,12 @@ $(function(){
     };
 
 
-    var deleteRequest = function(url, token){
+    var deleteRequest = function(url, token, deleteCallback){
         /* perform AJAX request */
         $.ajax(url, {
             type: 'DELETE',
             headers: { "Authorization": "Token " + token },
-            success: success_callback,
+            success: deleteCallback,
             error: error_callback,
         });
     };
@@ -233,15 +232,20 @@ $(function(){
     */
     var deleteRecordRequest = function(rid){
         url = rec_url(rid);
-        deleteRequest(url, get_token());
+        deleteRequest(url, get_token(), function(){
+            success_callback();
+            $('#unique_record_'+rid).remove();
+        });
     };
 
 
     var deleteUserRequest = function(uid){
         url = usr_url(uid);
-        deleteRequest(url, get_token());
+        deleteRequest(url, get_token(), function(){
+            success_callback();
+            $('#unique_user_'+uid).remove();
+        });
     };
-
 
     // User Interface specific events and methods
     var issueWarning=function(message){
@@ -257,26 +261,39 @@ $(function(){
 
     // User Interface specific events and methods
     var issueSuccess=function(message){
-        $('#generic_success').append('<p class="generic_sucess_message"><strong>Success! </strong>'+ message + '</p>');
+        $('#generic_success').append('<p class="generic_success_message"><strong>Success! </strong>'+ message + '</p>');
         $('#generic_success').show();
     };
 
 
     $("#hide_generic_warning").click( function(){
-        $("#generic_warning").empty();
-        $("#generic_warning").hide();
+        refreshSelectors();
+        cleanWarning();
     });
 
 
     $('#hide_generic_success').click( function(){
-        $("#generic_success").empty();
-        $("#generic_success").hide();
+        refreshSelectors();
+        cleanSuccess();
     });
 
-
+    refreshSelectors = function(){
+        cleanWarning=function(){
+            $(".generic_warning_message").remove();
+            $("#generic_warning").hide();
+        };
+        cleanSuccess = function(){
+            $(".generic_success_message").remove();
+            $("#generic_success").hide();
+        };
+        cleanError = function(){
+            $(".generic_error_message").remove();
+            $("#generic_error").hide();
+        };
+    }
     $("#hide_generic_error").click( function(){
-        $("#generic_error").empty();
-        $("#generic_error").hide();
+        refreshSelectors();
+        cleanError();
     });
 
 
@@ -415,7 +432,7 @@ $(function(){
         enableStats(recordList);
 
         $(".delete_record").click( function(){
-            deleteRecordRequest(this.value, newData);
+            deleteRecordRequest(this.value);
         });
 
         $(".update_record").click(function(){
@@ -432,7 +449,7 @@ $(function(){
                 var is_staff="checked";
             }
             $('#user_list').append(
-                '<div class="unique_user_'+user.id+'">'+
+                '<li id="unique_user_'+user.id+'">'+
                 '<form id="unique_user_form_'+user.id+'" class="form-inline">'+
                     '<input type="checkbox" onclick="return false" name="is_staff" class="form-control" ' + is_staff + '>' +
                     '<input name="first_name" class="form-control" type="text" placeholder="firstname" value="' + user.first_name + '" >' +
@@ -441,7 +458,7 @@ $(function(){
                     '<input name="password" class="form-control" type="text" placeholder="password" value="" >' +
                     '<button type="button" class="btn btn-warning update_user" value="' + user.id +'">update</button>' +
                     '<button type="button" class="btn btn-danger delete_user" value="' + user.id +'">delete</button>' +
-                '</form></div>'
+                '</form></li>'
             );
         };
 
