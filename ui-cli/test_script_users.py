@@ -1,9 +1,11 @@
 
 import json
 import pytest
-from fixtures import admin_api, runserver, random_user
+from fixtures import admin_api, random_user
 
 N_TEST = 100
+
+
 
 @pytest.mark.parametrize('number', [N_TEST])
 def test_create_get_delete( number, runserver, admin_api ):

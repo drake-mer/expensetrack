@@ -30,18 +30,6 @@ def random_record():
     return DEFAULT_RECORD
 
 
-@pytest.fixture(scope='session', autouse=True)
-def runserver():
-    if True:
-        return True
-    else:
-        from django.core.management import call_command
-        from ..extrack.extrack import settings
-        settings.configure()
-        call_command(command_name='runserver')
-        return ("http://localhost:8000")
-
-
 @pytest.fixture(scope='session', autouse=False)
 def admin_api():
     my = ExTrackCLI()

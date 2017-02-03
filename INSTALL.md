@@ -15,13 +15,13 @@ should be possible with minimal changes.
  
 In the command line interface, at the root of the project, execute: 
 
-```pip install requirements.txt```
+```pip install -r requirements.txt```
 
 This will install 
 * Django
 * the django-rest-framework
 * the django-cors-headers application, 
-* pytest 
+* pytest
  
  and all the required dependencies.
 
