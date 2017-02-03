@@ -1,8 +1,7 @@
 import requests
 import configparser
+import json.decoder
 import os
-
-CONF_FILE=os.path.join(os.curdir,'cli_extrack.ini')
 
 DEFAULT_ACCOUNT = {
     'username': 'DEFAULT_USR_NAME',
@@ -12,99 +11,87 @@ DEFAULT_ACCOUNT = {
     'email': 'DEFAULT_MAIL@DOMAIN.COM'
 }
 
-
-
-DEFAULT_USER = {
-    "login": DEFAULT_ACCOUNT['username'],
-    "password": DEFAULT_ACCOUNT['password']
-}
-
 DEFAULT_SERVER = {
-    "port": "8000",
-    "host": "localhost",
-    "method": "http://"
+    "addr": "http://localhost:8000/",
+    "auth_route": "api-token-auth",
+    "user_route": "users",
+    "record_route": "records"
 }
 
-conf = DEFAULT_SERVER
-BASE_URL = conf['method'] + ':'.join( [conf[key] for key in ('host', 'port')])
+CONF_FILE = os.path.join('cli_extrack.ini')
 
-def read_conf(conf_path=CONF_FILE):
-    my = configparser.ConfigParser()
-    my.read(conf_path)
-    return (dict(my['USER']), dict(my['ADMIN']))
+class ExTrackCLI:
+    """ Class to interact with the API"""
+    def __init__(self, token=None, serverconf=DEFAULT_SERVER):
+        self.url = serverconf['addr']
+        self.auth = serverconf['auth_route']
+        self.users = serverconf['user_route']
+        self.records = serverconf['record_route']
+        self.token = token
 
-user, adm = read_conf()
+    def generic_url(self, obj_name, obj_id):
+        return self.url + self.__getattribute__(obj_name) + "/" + ((str(obj_id)+"/") if obj_id else "")
 
-def get_session( user=DEFAULT_USER ):
-    LOG_URL = "".join( x+"/" for x in [BASE_URL, 'login'] )
-    r = requests.post(
-        LOG_URL,
-        data={ 'login': user['login'], 'password': user['password'] }
-    )
-    return r
+    def auth_url(self):
+        return self.generic_url( 'auth', None)
 
-def get_token( user=DEFAULT_USER):
-    ans = get_session(user=user)
-    return ans
+    def record_url(self, record_id=None):
+        return self.generic_url('records', record_id)
 
-def create_user( user=DEFAULT_USER ):
-    CREATE_URL = "".join( x + "/" for x in [BASE_URL, 'users'] )
-    r = requests.post(
-        CREATE_URL,
-        data=user,
-        headers = { 'Authorization': "Token b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8"}
-    )
-    return r
+    def user_url(self, user_id=None):
+        return self.generic_url('users', user_id)
 
-def delete_user( user_id ):
-    DEL_USR_URL = "".join( x + "/" for x in [ BASE_URL, 'users', str(user_id) ] )
-    r = requests.delete( DEL_USR_URL,
-        headers = { 'Authorization': "Token b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8"} )
-    return r
+    def auth_header(self, token=None):
+        the_token = self.token if self.token and token is None else token
+        return { 'Authorization': "Token {}".format(the_token) }
 
-def get_all_users():
-    GET_ALL_USR_URL = "".join( x + "/" for x in [ BASE_URL, 'users' ] )
-    r = requests.get(
-        GET_ALL_USR_URL,
-        headers = { 'Authorization': "Token b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8"}
-    )
-    return r
+    def get_auth( self, credentials=None ):
+        r = requests.post( self.auth_url(), data= credentials )
+        if r.status_code == 200:
+            dec = json.decoder.JSONDecoder()
+            try:
+                self.token = dec.decode(r.text)['token']
+            except:
+                self.token = None
+        return self.token
 
-def get_usr(user_id):
-    GET_REC_USR_URL = "".join([ x + "/" for x in [BASE_URL, 'users', str(user_id)] ])
-    return requests.get( GET_REC_USR_URL,
-                         headers={'Authorization': "Token b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8"})
+    def create_user( self, user=None ):
+        r = requests.post( self.user_url(), data=user, headers = self.auth_header())
+        return r
 
-def create_record(user_id, record={}):
-    GET_REC_USR_URL = "".join( [ x+"/" for x in [BASE_URL, 'record', 'user', str(user_id), 'add' ] ] )
-    return requests.post( GET_REC_USR_URL, data=record,
-                          headers={'Authorization': "Token b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8"} )
+    def delete_user( self, user_id ):
+        return requests.delete( self.user_url(user_id), headers=self.auth_header() )
 
-def get_records_of_usr(user_id):
-    GET_REC_USR_URL = "".join( [x+"/" for x in [ BASE_URL, 'records', 'user', str(user_id) ]] )
-    return requests.get( GET_REC_USR_URL )
+    def get_all_users( self ):
+        return requests.get( self.user_url(), headers=self.auth_header() )
 
-def update_record( record_id, record={}):
-    UP_REC_URL = "".join( [ x + "/" for x in [ BASE_URL, 'record', str(record_id) ] ] )
-    return requests.post( UP_REC_URL, data=record )
+    def get_usr(self, user_id):
+        return requests.get( self.user_url(user_id), headers=self.auth_header() )
 
-def get_record( record_id ):
-    GET_REC_URL = "".join( [x + "/" for x in [ BASE_URL, 'record', str(record_id) ] ])
-    return requests.get( GET_REC_URL )
+    def create_record(self, record=None):
+        return requests.post( self.record_url(), data=record, headers=self.auth_header() )
 
-def delete_record( record_id ):
-    DEL_REC_URL = "".join( [ x+"/" for x in [BASE_URL, 'record', str(record_id) ] ])
-    return requests.delete( DEL_REC_URL,
-                            headers = { 'Authorization': "Token b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8"} )
+    def get_all_records(self):
+        return requests.get( self.record_url(), headers=self.auth_header())
 
-def get_auth_token(data=None):
-    AUTH_URL = "".join( [x+"/" for x in [BASE_URL, 'api-token-auth']])
-    return requests.post(AUTH_URL, data=data)
+    def update_record( self, record_id, record={}):
+        return requests.post( self.record_url(), data=record )
 
-def get_admin_auth(name='david', password='test'):
-    result = get_auth_token( data={'username': name, 'password': password} )
-    return result
+    def get_record( self, record_id ):
+        return requests.get( self.record_url(record_id), headers = self.auth_header() )
 
-def get_user_auth(name='toto', password='test'):
-    result = get_auth_token( data={'username': name, 'password': password} )
-    return result
+    def delete_record( self, record_id ):
+        return requests.delete( url=self.record_url(record_id), headers = self.auth_header() )
+
+    def read_conf(conf_path=CONF_FILE):
+        my = configparser.ConfigParser()
+        try:
+            my.read(conf_path)
+            return ()
+        except:
+            print("Warning: no conf file has been read")
+
+if __name__=='__main__':
+    my = ExTrackCLI()
+    x=my.get_auth()
+    y=my.auth_header()
