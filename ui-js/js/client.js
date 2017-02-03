@@ -474,8 +474,9 @@ $(function(){
         });
     }
 
-    /* for debugging purpose */
+    /* for debugging purpose
     setAuth( { username:'david', is_staff: true, id: 1,
                token:"b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8" } );
+    */
 });
 
