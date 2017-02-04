@@ -33,11 +33,12 @@ use the `--user` flag and don't forget to add
 the `~/.local/lib/python3.6/site-packages/`
 to your `PYTHONPATH` environment variable. 
 
-The use a of virtual environments is not covered by this doc but is 
-quite possible with minor tweaks.
-
 ## Demo script
 
-To check if everything is ok, a script `demo_script.sh` has
-been included for a quick start. It doesn't install dependencies,
-you will have to do it by hand.
+To check if everything is ok, run `demo_script.sh`.
+It will create the database schema and launch the webserver,
+then ask you for the creation of an superuser.
+ 
+At this point, you will be able to use the application by
+opening `ui-js/index.html` in your browser and to start creating
+users and records.
