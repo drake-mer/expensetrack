@@ -6,6 +6,14 @@ $(function(){
         return result;
     };
 
+
+    Date.prototype.dayOfYear= function(){
+        var j1= new Date(this);
+        j1.setMonth(0, 0);
+        return Math.round((this-j1)/8.64e7);
+    };
+
+
     var clearRecordList = function(){
         $('#record_stat_list').empty();
         $(".unique_record").remove(); // remove all the records from the document

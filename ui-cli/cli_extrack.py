@@ -12,7 +12,7 @@ DEFAULT_ACCOUNT = {
 }
 
 DEFAULT_SERVER = {
-    "addr": "http://localhost:8080/",
+    "addr": "http://localhost:8000/",
     "auth_route": "api-token-auth",
     "user_route": "users",
     "record_route": "records"
