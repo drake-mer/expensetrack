@@ -13,6 +13,6 @@ sed -i s/"localhost:8000"/"localhost:8080"/g ui-js/js/client.js
 cd extrack
 python manage.py migrate
 python manage.py createsuperuser
-python manage.py runserver localhost:8080 &
+python manage.py runserver localhost:8080 
 
 
