@@ -35,9 +35,10 @@ to your `PYTHONPATH` environment variable.
 
 ## Demo script
 
-To check if everything is ok, run `demo_script.sh`.
-It will create the database schema and launch the webserver,
-then ask you for the creation of an superuser.
+To check if everything is ok, run `demo_script.sh` at the root 
+of your repository.
+It will clone the repo, create the database schema and launch the webserver.
+It will also ask you for the creation of an superuser.
  
 At this point, you will be able to use the application by
 opening `ui-js/index.html` in your browser and to start creating
