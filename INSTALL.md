@@ -1,4 +1,5 @@
-# Installation and use of the ExTrack API
+# Run the ExTrack API and clients
+
 ## Requirements
 
 Throughout this doc, we assume that the user is using a Linux system 
