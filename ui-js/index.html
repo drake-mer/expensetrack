@@ -70,7 +70,7 @@
           <input name="date_form" class="form-control" type="date" id="global_date" >
         </p>
 
-        <p id="create_record" class="form alert-info" >
+        <p class="create_record" class="form alert-info" >
           <h3 class="alert-info">Record creation<br></h3>
             <form id="new_record_form" class="form">
             <input name="user_date" class="form-control" type="date"  placeholder="record date" >
@@ -78,18 +78,18 @@
             <input name="value" class="form-control" type="text"  placeholder="amount ($)">
             <input name="description" class="form-control" type="text"  placeholder="description" >
             <input name="comment" class="form-control" type="text"  placeholder="comment" >
-            <button class="btn btn-success" type="button">Create record</button>
+            <button id="create_new_record_button" class="btn btn-success" type="button">Create record</button>
             </form>
         </p>
 
-        <p id="create_user" >
+        <p class="create_user" >
           <h3 class="alert-info">User creation </h3>
             <form id="new_user_form" class="form">
               <input name="first_name" class="form-control" type="text" placeholder="firstname">
               <input name="last_name" class="form-control" type="text" placeholder="lastname">
               <input name="username" class="form-control" type="text" placeholder="Login">
               <input name="password" class="form-control" type="text"  placeholder="password" >
-              <button class="btn btn-success" type="button">Create User</button>
+              <button id="create_new_user_button" class="btn btn-success" type="button">Create User</button>
               </form>
         </p>
       </div>

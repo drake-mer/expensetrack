@@ -361,11 +361,12 @@ $(function(){
         sendListRecordsRequest( rec_url(), get_token(), filterByWeek);
     });
 
-    $('#new_record_form').click(function(){
+    $('#create_new_record_button').click(function(){
         // fetch back the content of the form as an array
         addRecordRequest( dataFromForm( $('#new_record_form').serializeArray() ) );
     });
-    $('#new_user_form').click( function(){
+
+    $('#create_new_user_button').click( function(){
         // fetch back the content of the form as an array
         addUserRequest( dataFromForm( $('#new_user_form').serializeArray() ) );
     });
@@ -474,9 +475,5 @@ $(function(){
         });
     }
 
-    /* for debugging purpose
-    setAuth( { username:'david', is_staff: true, id: 1,
-               token:"b4a8a313eb062dbff8c7b9cfee28e9bcfddb9dc8" } );
-    */
 });
 
