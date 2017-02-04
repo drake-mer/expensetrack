@@ -88,7 +88,7 @@ class ExTrackCLI:
     def get_record( self, record_id ):
         return requests.get( self.record_url(record_id), headers=self.auth_header() )
 
-
+    """Stalled conf reading method"""
     def read_conf(conf_path=CONF_FILE):
         my = configparser.ConfigParser()
         try:
