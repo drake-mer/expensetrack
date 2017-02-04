@@ -15,23 +15,29 @@ should be possible with minimal changes.
  
 In the command line interface, at the root of the project, execute: 
 
-```pip install -r requirements.txt```
+```
+pip install -r requirements.txt
+```
 
 This will install 
+
 * Django
-* the django-rest-framework
-* the django-cors-headers application, 
+* django-rest-framework
+* django-cors-headers application 
 * pytest
  
- and all the required dependencies.
+and all the dependencies.
 
 If you you want install the requirements in your user directory, 
-use the `--user` flag and don't forget to add the `~/.local/lib/python3.6/site-packages/`
+use the `--user` flag and don't forget to add 
+the `~/.local/lib/python3.6/site-packages/`
 to your `PYTHONPATH` environment variable. 
 
-The use of virtual environments is not covered by this doc but should
-still be possible.
+The use a of virtual environments is not covered by this doc but is 
+quite possible with minor tweaks.
 
-## Deployment
+## Demo script
 
-TODO
+To check if everything is ok, a script `demo_script.sh` has
+been included for a quick start. It doesn't install dependencies,
+you will have to do it by hand.
