@@ -1,5 +1,4 @@
 $(function(){
-
     function addDays(date, days) {
         var result = new Date(date);
         result.setDate(result.getDate() + days);
@@ -16,15 +15,12 @@ $(function(){
     };
 
     var clearWindow = function (){
-        refreshSelectors();
         cleanError();
         cleanSuccess();
         cleanWarning();
         clearRecordList();
         clearUserList();
     };
-
-
 
     var clearAuth = function(){
         $('#loggout_form').hide();
@@ -38,7 +34,6 @@ $(function(){
         $('#login_button').hide();
         $('#get_auth_form').hide();
         $('#loggout_form').show();
-        clearWindow();
         GLOBAL_STATE.user = httpComing;
     };
 
@@ -57,7 +52,6 @@ $(function(){
         );
     };
 
-
     GLOBAL_STATE = {
         /* Strong convention to be followed:
         ** Nothing is to be followed. Just trust in the force.
@@ -69,7 +63,6 @@ $(function(){
         debug: true,
         user: null
     };
-
 
     var dataFromForm = function(data){
         // input data are usually objects returned by the jQuery .serializeArray()
@@ -259,62 +252,52 @@ $(function(){
         $('#generic_success').show();
     };
 
-
     $("#hide_generic_warning").click( function(){
-        refreshSelectors();
         cleanWarning();
     });
 
-
     $('#hide_generic_success').click( function(){
-        refreshSelectors();
         cleanSuccess();
     });
 
-    refreshSelectors = function(){
-        cleanWarning=function(){
-            $(".generic_warning_message").remove();
-            $("#generic_warning").hide();
-        };
-        cleanSuccess = function(){
-            $(".generic_success_message").remove();
-            $("#generic_success").hide();
-        };
-        cleanError = function(){
-            $(".generic_error_message").remove();
-            $("#generic_error").hide();
-        };
-    }
     $("#hide_generic_error").click( function(){
-        refreshSelectors();
         cleanError();
     });
 
+    var cleanWarning=function(){
+        $(".generic_warning_message").remove();
+        $("#generic_warning").hide();
+    };
+
+    var cleanSuccess=function(){
+        $(".generic_success_message").remove();
+        $("#generic_success").hide();
+    };
+
+    var cleanError=function(){
+        $(".generic_error_message").remove();
+        $("#generic_error").hide();
+    };
 
     $("#close_intro_cross").click( function(){
         $("#introductory_text").hide();
     });
 
-
     $("#help_button").click( function(){
         $("#introductory_text").show();
     });
-
 
     $("#record_list_cross").click( function(){
         clearRecordList();
     });
 
-
     $("#user_list_cross").click( function(){
         clearUserList();
     });
 
-
     $("#logout_button").click(function(){
         clearAuth();
     });
-
 
     $("#login_button").click(function(){
         var username = $('#login_form')[0].value;
@@ -322,7 +305,6 @@ $(function(){
         var url = GLOBAL_STATE.url + "/" + GLOBAL_STATE.auth_route + "/";
         sendAuthenticationRequest(url, username, password);
     });
-
 
     $("#get_list_user").click(function(){
         sendListUsersRequest( usr_url(), get_token());
@@ -364,7 +346,6 @@ $(function(){
         // fetch back the content of the form as an array
         addUserRequest( dataFromForm( $('#new_user_form').serializeArray() ) );
     });
-
 
     var enableStats = function(recordList){
         var granTotal = recordList.reduce( function(a,b){ return (a + parseFloat(b.value)) ;}, 0);
@@ -409,7 +390,6 @@ $(function(){
     var showSelectedRecords = function(recordList){
 
         clearRecordList();
-
         var appendRecordToView = function( record ){
             $('#record_list').append('<li class="unique_record" id="unique_record_'+record.id+'">'+
             '<form id="unique_record_form_'+record.id+'" class="form-inline">'+
@@ -435,7 +415,6 @@ $(function(){
             updateRecordRequest(this.value, newData);
         });
     }
-
 
     var showSelectedUsers = function(userList){
         clearUserList();
