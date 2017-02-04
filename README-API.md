@@ -35,9 +35,7 @@ the user with `user_id=8` (admin only or owner of the account)
 ### Authentication
 
 The authentication is made through a `POST` request whose header
-contains the credentials in JSON format :
-
-```{username: 'username', password: '*******'}```
+contains the credentials in JSON format : `{username: 'username', password: '*******'}`
 
 With curl, you would authenticate doing:
 
