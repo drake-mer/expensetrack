@@ -10,8 +10,8 @@ Expense Track is:
 
 # Documentation
 
-- [Installation Guide](INSTALL.md)
-- [Readme for the user interface](README-UI.md)
-- [Readme for the REST API](README-API.md)
+- [Installation Guide](doc/INSTALL.md)
+- [Readme for the user interface](doc/README-UI.md)
+- [Readme for the REST API](doc/README-API.md)
 
 

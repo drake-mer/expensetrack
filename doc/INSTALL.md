@@ -1,4 +1,14 @@
-# Run the ExTrack API and clients
+## install dependencies
+
+
+This should be enough to get you started:
+
+```bash
+cd ${expensetrack} && \
+    python -m venv venv && \
+    source venv/bin/activate && \
+    pip install -r requirements.txt
+```
 
 ## Requirements
 
