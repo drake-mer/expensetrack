@@ -6,7 +6,7 @@ Expense Track is:
 + a CLI client (based on the `requests` python library) which is used also to test the API
 + a single page application coded with Javascript heavily using jQuery
 
-![Screeshot of jQuery client](/snap.png "Screenshot")
+![Screeshot of jQuery client](doc/snap.png "Screenshot")
 
 # Documentation
 
