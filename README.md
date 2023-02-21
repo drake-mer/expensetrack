@@ -2,9 +2,9 @@
 
 Expense Track is:
 
-+ a Simple REST API available through HTTP based on the Django DRF framework (http://www.django-rest-framework.org/)
-+ a CLI client (based on the `requests` python library) which is used also to test the API
-+ a single page application coded with Javascript heavily using jQuery
++ a Simple REST API based on the [Django Rest Framework](http://www.django-rest-framework.org/).
++ a [python CLI client](cli) for the API.
++ a [JavaScript Single Page Application](front) based on the jQuery library.
 
 ![Screeshot of jQuery client](doc/snap.png "Screenshot")
 
