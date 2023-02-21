@@ -1,4 +1,5 @@
 db.sqlite3
+venv/
 .eric6project/
 .idea/
 TOPTAL.e4p
