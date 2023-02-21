@@ -10,10 +10,8 @@ Expense Track is:
 
 # Documentation
 
-## README-UI.md
+- [Installation Guide](INSTALL.md)
+- [Readme for the user interface](README-UI.md)
+- [Readme for the REST API](README-API.md)
 
-This file contains a description and a documentation about the user interface
 
-## README-API.md
-
-This file contains a description and a documentation about the API.
